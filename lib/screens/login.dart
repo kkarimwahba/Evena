@@ -1,3 +1,4 @@
+import 'package:evena/screens/category.dart';
 import 'package:evena/screens/signup.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:flutter/material.dart';
