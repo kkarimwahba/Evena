@@ -1,16 +1,17 @@
-
 import 'package:evena/screens/booking.dart';
+import 'package:evena/screens/category.dart';
+import 'package:evena/screens/login.dart';
 import 'package:flutter/material.dart';
 
 class UserHome extends StatefulWidget {
-  UserHome({Key? key}) : super(key: key);
+  const UserHome({Key? key}) : super(key: key);
 
   @override
   _UserHomeState createState() => _UserHomeState();
 }
 
 class _UserHomeState extends State<UserHome> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -22,6 +23,12 @@ class _UserHomeState extends State<UserHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: const Text(
           "EVENA",
           style: TextStyle(color: Colors.white),
@@ -35,7 +42,7 @@ class _UserHomeState extends State<UserHome> {
             child: Align(
               alignment: Alignment.center,
               child: Text(
-                "Welcome to EVENA",
+                "Explore Our Events.",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -47,13 +54,16 @@ class _UserHomeState extends State<UserHome> {
           const SizedBox(
             height: 20,
           ),
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: "Search",
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+          SizedBox(
+            width: 0.9 * MediaQuery.of(context).size.width,
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: "Search",
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ),
@@ -62,18 +72,17 @@ class _UserHomeState extends State<UserHome> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 6, // Assuming you want four cards
+              itemCount: 6,
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {},
                   child: Card(
-                    shadowColor: const Color(0xFFE14658),
+                    shadowColor: const Color.fromARGB(230, 255, 176, 17),
                     elevation: 4,
                     margin: const EdgeInsets.all(16),
                     child: Stack(
                       alignment: Alignment.centerLeft,
                       children: [
-                        // Adjust the image paths accordingly
                         Image.asset(
                           index == 0
                               ? 'assets/images/WhatsApp Image 2023-11-28 at 17.48.50_adfb07c2.jpg'
@@ -91,8 +100,8 @@ class _UserHomeState extends State<UserHome> {
                           height: 200,
                         ),
                         Positioned(
-                          bottom: 100,
-                          left: 600,
+                          bottom: 150,
+                          left: 210,
                           child: Text(
                             index == 0
                                 ? "Tamer Hossny"
@@ -105,7 +114,7 @@ class _UserHomeState extends State<UserHome> {
                                             : index == 4
                                                 ? "Sharmoofers"
                                                 : "Nina Kraviz",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
@@ -114,8 +123,8 @@ class _UserHomeState extends State<UserHome> {
                           ),
                         ),
                         Positioned(
-                          bottom: 70,
-                          left: 600,
+                          bottom: 120,
+                          left: 200,
                           child: Text(
                             index == 0
                                 ? "SIDI ABDEL RAHMAN."
@@ -128,7 +137,7 @@ class _UserHomeState extends State<UserHome> {
                                             : index == 4
                                                 ? "NEW ALAMEIN FESTIVAL."
                                                 : "Terra Solis.",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 14,
                             ),
@@ -136,8 +145,8 @@ class _UserHomeState extends State<UserHome> {
                           ),
                         ),
                         Positioned(
-                          bottom: 50,
-                          left: 600,
+                          bottom: 100,
+                          left: 200,
                           child: Text(
                             index == 0
                                 ? "North Coast 14th July."
@@ -150,7 +159,7 @@ class _UserHomeState extends State<UserHome> {
                                             : index == 4
                                                 ? "02 September."
                                                 : "December 15th.",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 14,
                             ),
@@ -158,8 +167,8 @@ class _UserHomeState extends State<UserHome> {
                           ),
                         ),
                         Positioned(
-                          bottom: 30,
-                          left: 600,
+                          bottom: 80,
+                          left: 200,
                           child: Text(
                             index == 0
                                 ? "Egypt."
@@ -172,7 +181,7 @@ class _UserHomeState extends State<UserHome> {
                                             : index == 4
                                                 ? "Egypt."
                                                 : "Dubai.",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 14,
                             ),
@@ -180,8 +189,8 @@ class _UserHomeState extends State<UserHome> {
                           ),
                         ),
                         Positioned(
-                          bottom: 10,
-                          left: 600,
+                          bottom: 60,
+                          left: 200,
                           child: Text(
                             index == 0
                                 ? "1400 EGP."
@@ -194,7 +203,7 @@ class _UserHomeState extends State<UserHome> {
                                             : index == 4
                                                 ? "400 EGP."
                                                 : "350 UAE.",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 14,
                             ),
@@ -205,7 +214,7 @@ class _UserHomeState extends State<UserHome> {
                           bottom: 20,
                           right: 20,
                           child: Padding(
-                            padding: EdgeInsets.only(bottom: 0, right: 0),
+                            padding: const EdgeInsets.only(bottom: 0, right: 0),
                             child: ElevatedButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
@@ -215,9 +224,10 @@ class _UserHomeState extends State<UserHome> {
                                 ));
                               },
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
+                                primary:
+                                    const Color.fromARGB(230, 255, 176, 17),
                               ),
-                              child: Text(
+                              child: const Text(
                                 "Book Now",
                                 style: TextStyle(fontSize: 20),
                               ),

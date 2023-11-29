@@ -137,7 +137,7 @@ class _LoginState extends State<Login> {
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) {
-                                return UserHome();
+                                return Category();
                               },
                             ));
                           },

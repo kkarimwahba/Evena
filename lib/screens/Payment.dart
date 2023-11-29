@@ -32,7 +32,7 @@ class _PaymentState extends State<Payment> {
             onCreditCardWidgetChange: (CreditCardBrand) {},
           ),
           TextFormField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Card Number',
             ),
             keyboardType: TextInputType.number,
@@ -45,7 +45,7 @@ class _PaymentState extends State<Payment> {
             },
           ),
           TextFormField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Expiry Date',
             ),
             keyboardType: TextInputType.number,
@@ -58,7 +58,7 @@ class _PaymentState extends State<Payment> {
             },
           ),
           TextFormField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Card Holder Name',
             ),
             controller: cardHolderNameController,
@@ -70,7 +70,7 @@ class _PaymentState extends State<Payment> {
             },
           ),
           TextFormField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'CVV Code',
             ),
             keyboardType: TextInputType.number,
@@ -93,21 +93,30 @@ class _PaymentState extends State<Payment> {
                   showAlertDialog(context);
                 }
               },
-              child: Text('Confirm Payment'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+              ),
+              child: const Text(
+                'Confirm Payment',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ),
         ],
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Payment Page'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: creditCardForm,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Payment Page'),
+          backgroundColor: Colors.black,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: creditCardForm,
+          ),
         ),
       ),
     );
@@ -115,19 +124,19 @@ class _PaymentState extends State<Payment> {
 
   void showAlertDialog(BuildContext context) {
     Widget okButton = ElevatedButton(
-      child: Text("Ok"),
+      child: const Text("Ok"),
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (c) {
-            return UserHome();
+            return const UserHome();
           },
         ));
       },
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Payment Confirmed"),
-      content: Text("It is your ticket now"),
+      title: const Text("Payment Confirmed"),
+      content: const Text("It is your ticket now"),
       actions: [
         okButton,
       ],

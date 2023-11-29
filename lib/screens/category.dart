@@ -1,3 +1,4 @@
+import 'package:evena/screens/userHome.dart';
 import 'package:flutter/material.dart';
 
 class Category extends StatefulWidget {
@@ -8,35 +9,91 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
+  final TextEditingController _searchControllerCategory =
+      TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "EVENA",
-          style: TextStyle(color: Colors.white),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "EVENA",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.black,
         ),
-        backgroundColor: Colors.black,
-      ),
-      body: const Column(children: [
-        Padding(
-          padding: EdgeInsets.only(top: 35.0),
-          child: Align(
-            alignment: Alignment.center,
-            child: Text(
-              "Welcome to EVENA",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontSize: 35,
+        body: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(top: 35.0, left: 20),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  "Categories",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 35,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
               ),
             ),
-          ),
+            const SizedBox(
+              height: 30,
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (c) {
+                            return UserHome();
+                          },
+                        ));
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 85,
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              leading: Image.asset(
+                                index == 0
+                                    ? 'assets/images/musicIcon.png'
+                                    : index == 1
+                                        ? 'assets/images/standup.png'
+                                        : index == 2
+                                            ? 'assets/images/gamimg.png'
+                                            : 'assets/images/gamimg.png',
+                                width: 50,
+                                height: 50,
+                              ),
+                              title: Text(
+                                index == 0
+                                    ? "Musical"
+                                    : index == 1
+                                        ? "Stand-up Comedy"
+                                        : index == 2
+                                            ? "Gaming"
+                                            : "Gaming",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              trailing: const Icon(Icons.arrow_forward),
+                            ),
+                          ),
+                        ),
+                      ));
+                },
+              ),
+            ),
+          ],
         ),
-        SizedBox(
-          height: 20,
-        ),
-      ]),
+      ),
     );
   }
 }
