@@ -1,3 +1,4 @@
+import 'package:evena/screens/booking.dart';
 import 'package:flutter/material.dart';
 
 class UserHome extends StatefulWidget {
@@ -178,22 +179,46 @@ class _UserHomeState extends State<UserHome> {
                           ),
                         ),
                         Positioned(
+                          bottom: 10,
+                          left: 600,
+                          child: Text(
+                            index == 0
+                                ? "1400 EGP."
+                                : index == 1
+                                    ? "600 EGP."
+                                    : index == 2
+                                        ? "200 EGP."
+                                        : index == 3
+                                            ? "250 QAR."
+                                            : index == 4
+                                                ? "400 EGP."
+                                                : "350 UAE.",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Positioned(
                           bottom: 20,
                           right: 20,
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 0, right: 0),
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (c) {
+                                    return Booking();
+                                  },
+                                ));
+                              },
                               style: ElevatedButton.styleFrom(
                                 primary: Colors.white,
                               ),
                               child: Text(
                                 "Book Now",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: TextStyle(fontSize: 20),
                               ),
                             ),
                           ),
