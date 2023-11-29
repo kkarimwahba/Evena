@@ -75,6 +75,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  icons_flutter:
+    dependency: "direct main"
+    description:
+      name: icons_flutter
+      sha256: def6e6a79709a5ed62e564005ab34bf39b4cc6377604c4422af6397941da4607
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   lints:
     dependency: transitive
     description:
@@ -99,6 +107,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.0"
+  material_symbols_icons:
+    dependency: "direct main"
+    description:
+      name: material_symbols_icons
+      sha256: "16463f7bbd312404f21e6dd8bd35af9ae16d34571fdd5894a71c2b9052c278ef"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2711.0"
   meta:
     dependency: transitive
     description:
@@ -186,3 +202,4 @@ packages:
     version: "0.1.4-beta"
 sdks:
   dart: ">=3.1.5 <4.0.0"
+  flutter: ">=3.7.0"
