@@ -16,6 +16,7 @@ class _BookingState extends State<Booking> {
   bool isNameValid = true;
   bool isPhoneNumberValid = true;
   bool isSeatPositionValid = true;
+  bool isNumberOfTicketsValid = true;
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +45,16 @@ class _BookingState extends State<Booking> {
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'Phone Number',
-                errorText:
-                    isPhoneNumberValid ? null : 'Please enter a valid number',
+                errorText: isPhoneNumberValid
+                    ? null
+                    : 'Please enter a valid phone number (e.g., 123-456-7890)',
               ),
               keyboardType: TextInputType.phone,
               onChanged: (value) {
                 setState(() {
                   phoneNumber = value;
-                  isPhoneNumberValid = value.isNotEmpty;
+                  isPhoneNumberValid =
+                      RegExp(r'^\d{3}-\d{3}-\d{4}$').hasMatch(value);
                 });
               },
             ),
@@ -96,18 +99,15 @@ class _BookingState extends State<Booking> {
               width: 200,
               height: 60,
               child: ElevatedButton(
-                onPressed: () {
-                  // Perform validation before navigating
-                  if (isNameValid &&
-                      isPhoneNumberValid &&
-                      isSeatPositionValid) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (c) {
-                        return Payment();
-                      },
-                    ));
-                  }
-                },
+                onPressed: isFormValid()
+                    ? () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (c) {
+                            return Payment();
+                          },
+                        ));
+                      }
+                    : null,
                 child: const Text(
                   'Checkout',
                   style: TextStyle(fontSize: 25),
@@ -118,5 +118,12 @@ class _BookingState extends State<Booking> {
         ),
       ),
     );
+  }
+
+  bool isFormValid() {
+    return isNameValid &&
+        isPhoneNumberValid &&
+        isSeatPositionValid &&
+        numberOfTickets > 0;
   }
 }
