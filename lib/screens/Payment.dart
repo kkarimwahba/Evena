@@ -1,0 +1,143 @@
+import 'package:evena/screens/userHome.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_credit_card/flutter_credit_card.dart';
+
+class Payment extends StatefulWidget {
+  @override
+  _PaymentState createState() => _PaymentState();
+}
+
+class _PaymentState extends State<Payment> {
+  TextEditingController cardNumberController = TextEditingController();
+  TextEditingController expiryDateController = TextEditingController();
+  TextEditingController cardHolderNameController = TextEditingController();
+  TextEditingController cvvCodeController = TextEditingController();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    var creditCardForm = Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          CreditCardWidget(
+            width: 700,
+            height: 300,
+            cardNumber: cardNumberController.text,
+            expiryDate: expiryDateController.text,
+            cardHolderName: cardHolderNameController.text,
+            cvvCode: cvvCodeController.text,
+            showBackView: false,
+            onCreditCardWidgetChange: (CreditCardBrand) {},
+          ),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Card Number',
+            ),
+            keyboardType: TextInputType.number,
+            controller: cardNumberController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a valid card number';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Expiry Date',
+            ),
+            keyboardType: TextInputType.number,
+            controller: expiryDateController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a valid expiry date';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Card Holder Name',
+            ),
+            controller: cardHolderNameController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter the card holder\'s name';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'CVV Code',
+            ),
+            keyboardType: TextInputType.number,
+            controller: cvvCodeController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a valid CVV code';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: 200,
+            height: 60,
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  // Perform payment confirmation logic here
+                  showAlertDialog(context);
+                }
+              },
+              child: Text('Confirm Payment'),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Payment Page'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: creditCardForm,
+        ),
+      ),
+    );
+  }
+
+  void showAlertDialog(BuildContext context) {
+    Widget okButton = ElevatedButton(
+      child: Text("Ok"),
+      onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (c) {
+            return UserHome();
+          },
+        ));
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Payment Confirmed"),
+      content: Text("It is your ticket now"),
+      actions: [
+        okButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+}
