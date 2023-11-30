@@ -1,3 +1,4 @@
+import 'package:evena/widgets/drawers.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:flutter/material.dart';
 
@@ -9,13 +10,16 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-  final TextEditingController _searchControllerCategory =
-      TextEditingController();
+  // final TextEditingController _searchControllerCategory =
+  //     TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        drawer: DrawerWidget(
+          title: 'Evena',
+        ),
         appBar: AppBar(
           title: const Text(
             "EVENA",
@@ -51,7 +55,7 @@ class _CategoryState extends State<Category> {
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (c) {
-                            return UserHome();
+                            return const UserHome();
                           },
                         ));
                       },
@@ -81,7 +85,7 @@ class _CategoryState extends State<Category> {
                                         : index == 2
                                             ? "Gaming"
                                             : "Gaming",
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                               ),
                               trailing: const Icon(Icons.arrow_forward),
                             ),
