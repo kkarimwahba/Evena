@@ -1,6 +1,4 @@
-import 'package:evena/screens/booking.dart';
-import 'package:evena/screens/category.dart';
-import 'package:evena/screens/login.dart';
+import 'package:evena/screens/eventdetails.dart';
 import 'package:flutter/material.dart';
 
 class UserHome extends StatefulWidget {
@@ -75,7 +73,13 @@ class _UserHomeState extends State<UserHome> {
               itemCount: 6,
               itemBuilder: (context, index) {
                 return InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (c) {
+                        return EventDetails();
+                      },
+                    ));
+                  },
                   child: Card(
                     shadowColor: const Color.fromARGB(230, 255, 176, 17),
                     elevation: 4,
@@ -219,7 +223,7 @@ class _UserHomeState extends State<UserHome> {
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (c) {
-                                    return Booking();
+                                    return EventDetails();
                                   },
                                 ));
                               },
