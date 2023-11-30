@@ -1,5 +1,8 @@
+import 'package:evena/screens/admin_add.dart';
+import 'package:evena/screens/adminprofile.dart';
+import 'package:evena/screens/eventslist.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sticky_widgets/flutter_sticky_widgets.dart';
+
 
 class Admin extends StatefulWidget {
   const Admin({Key? key}) : super(key: key);
@@ -9,7 +12,16 @@ class Admin extends StatefulWidget {
 }
 
 class _AdminState extends State<Admin> {
-  final _controller = ScrollController();
+  
+  int selectedPage = 0;
+
+  final _pageOptions = [
+    Events(),
+    AddEventPage(),
+    AdminProfilePage()
+  ];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +35,76 @@ class _AdminState extends State<Admin> {
           ],
         ),
       ),
-      body: 
-        ListView.builder(
+      body: _pageOptions [selectedPage],
+        
+        bottomNavigationBar: Container( 
+        height: 60, 
+        decoration: const BoxDecoration( 
+          color: Colors.black, 
+          borderRadius: BorderRadius.only( 
+            topLeft: Radius.circular(20), 
+            topRight: Radius.circular(20), 
+          ), 
+        ), 
+        child: Row( 
+          mainAxisAlignment: MainAxisAlignment.spaceAround, 
+          children: [ 
+            IconButton( 
+              enableFeedback: false, 
+              onPressed: () {
+                setState(() {
+                  selectedPage=0;
+                });
+              }, 
+              icon: const Icon( 
+                Icons.home_outlined, 
+                color: Colors.white, 
+                size: 35, 
+              ), 
+            ),  
+            IconButton( 
+              enableFeedback: false, 
+              onPressed: () {
+               setState(() {
+                  selectedPage=1;
+                });
+              }, 
+              icon: const Icon( 
+                Icons.add, 
+                color: Colors.white, 
+                size: 35, 
+              ), 
+            ), 
+            IconButton( 
+              enableFeedback: false, 
+              onPressed: () {
+                setState(() {
+                  selectedPage=2;
+                });
+              }, 
+              icon: const Icon( 
+                Icons.person_outline, 
+                color: Colors.white, 
+                size: 35, 
+              ), 
+            ), 
+          ], 
+        ), 
+      ),
+    );
+  }
+}
+
+class Events extends StatelessWidget {
+  const Events ({super.key});
+  
+
+  @override
+  Widget build(BuildContext context) {
+    final _controller = ScrollController();
+
+    return Scaffold(
+     body: ListView.builder(
           controller: _controller,
           itemCount: 3,
           itemBuilder: (context, index) {
@@ -59,48 +139,6 @@ class _AdminState extends State<Admin> {
             );
           },
         ),
-        bottomNavigationBar: Container( 
-        height: 60, 
-        decoration: BoxDecoration( 
-          color: Colors.black, 
-          borderRadius: const BorderRadius.only( 
-            topLeft: Radius.circular(20), 
-            topRight: Radius.circular(20), 
-          ), 
-        ), 
-        child: Row( 
-          mainAxisAlignment: MainAxisAlignment.spaceAround, 
-          children: [ 
-            IconButton( 
-              enableFeedback: false, 
-              onPressed: () {}, 
-              icon: const Icon( 
-                Icons.home_outlined, 
-                color: Colors.white, 
-                size: 35, 
-              ), 
-            ),  
-            IconButton( 
-              enableFeedback: false, 
-              onPressed: () {}, 
-              icon: const Icon( 
-                Icons.add, 
-                color: Colors.white, 
-                size: 35, 
-              ), 
-            ), 
-            IconButton( 
-              enableFeedback: false, 
-              onPressed: () {}, 
-              icon: const Icon( 
-                Icons.person_outline, 
-                color: Colors.white, 
-                size: 35, 
-              ), 
-            ), 
-          ], 
-        ), 
-      ),
     );
   }
 }
