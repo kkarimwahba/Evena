@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:evena/screens/login.dart';
+import 'package:evena/screens/adminHome.dart';
 
 class Signup extends StatefulWidget {
   Signup({Key? key}) : super(key: key);
@@ -181,7 +182,13 @@ class _SignupState extends State<Signup> {
                         width: 0.8 * MediaQuery.of(context).size.width,
                         height: 0.13 * MediaQuery.of(context).size.width,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (c) {
+                                return const Admin();
+                              },
+                            ));
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.amberAccent[700],
                           ),

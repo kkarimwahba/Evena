@@ -1,3 +1,5 @@
+import 'package:evena/screens/adminHome.dart';
+import 'package:evena/screens/signup.dart';
 import 'package:flutter/material.dart';
 
 class AdminProfilePage extends StatefulWidget {
@@ -10,42 +12,68 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Profile'),
+        title: const Text('Admin Profile'),
+        backgroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/images/admin_profile.png'), // Change with your image
+              backgroundImage: AssetImage(
+                  'assets/images/messi.jpg'), // Change with your image
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Admin Name', // Replace with actual admin name
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 10),
+            const Text(
               'admin@example.com', // Replace with actual admin email
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Implement action for editing profile
               },
-              child: Text('Edit Profile'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amberAccent[700],
+              ),
+              child: const Text('Edit Profile'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                // Implement action for managing events or any other admin-specific action
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (c) {
+                    return const Admin();
+                  },
+                ));
               },
-              child: Text('Manage Events'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amberAccent[700],
+              ),
+              child: const Text('Manage Events'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (c) {
+                    return Signup();
+                  },
+                ));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amberAccent[700],
+              ),
+              child: const Text('Logout'),
             ),
             // Add more options or information relevant to an admin profile
           ],
@@ -54,4 +82,3 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
     );
   }
 }
-
