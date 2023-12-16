@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "58936452713",
+    "project_id": "evena-26742",
+    "storage_bucket": "evena-26742.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58936452713:android:fbd65a400a3017821c24f8",
+        "android_client_info": {
+          "package_name": "com.example.evena"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOsP5ggIoAQm0y2vTeEGDc0Hg-gqYDKcs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
