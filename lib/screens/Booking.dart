@@ -1,7 +1,13 @@
-import 'package:evena/screens/Payment.dart';
+// Import necessary packages
 import 'package:flutter/material.dart';
+import 'Payment.dart'; // Assuming you have a Payment page
 
 class Booking extends StatefulWidget {
+  // Add a parameter to accept selected seats
+  final List<int> selectedSeats;
+
+  const Booking({Key? key, required this.selectedSeats}) : super(key: key);
+
   @override
   _BookingState createState() => _BookingState();
 }
@@ -9,13 +15,13 @@ class Booking extends StatefulWidget {
 class _BookingState extends State<Booking> {
   String name = '';
   String phoneNumber = '';
-  String seatPosition = '';
+  String email = '';
   int numberOfTickets = 1;
 
   // Validation flags
   bool isNameValid = true;
   bool isPhoneNumberValid = true;
-  bool isSeatPositionValid = true;
+  bool isEmailValid = true;
   bool isNumberOfTicketsValid = true;
 
   @override
@@ -31,6 +37,7 @@ class _BookingState extends State<Booking> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Name Text Field
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Name',
@@ -44,6 +51,8 @@ class _BookingState extends State<Booking> {
                 },
               ),
               const SizedBox(height: 16.0),
+
+              // Phone Number Text Field
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
@@ -61,41 +70,38 @@ class _BookingState extends State<Booking> {
                 },
               ),
               const SizedBox(height: 16.0),
+
+              // Email Text Field
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Seat Position',
-                  errorText: isSeatPositionValid
+                  labelText: 'Email',
+                  errorText: isEmailValid
                       ? null
-                      : 'Please enter a valid position',
+                      : 'Please enter a valid email address',
                 ),
+                keyboardType: TextInputType.emailAddress,
                 onChanged: (value) {
                   setState(() {
-                    seatPosition = value;
-                    isSeatPositionValid = value.isNotEmpty;
+                    email = value;
+                    isEmailValid =
+                        RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                            .hasMatch(value);
                   });
                 },
               ),
               const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Number of Tickets'),
-                  DropdownButton<int>(
-                    value: numberOfTickets,
-                    items: [1, 2, 3, 4, 5]
-                        .map((int value) => DropdownMenuItem<int>(
-                              value: value,
-                              child: Text(value.toString()),
-                            ))
-                        .toList(),
-                    onChanged: (int? value) {
-                      setState(() {
-                        numberOfTickets = value ?? 1;
-                      });
-                    },
-                  ),
-                ],
+
+              // Existing code for seat position and number of tickets
+
+              // Display selected seats
+              const SizedBox(height: 16.0),
+              Text(
+                "Selected Seats: ${widget.selectedSeats}",
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
+
+              // Add other form fields or details as needed
+
               const SizedBox(height: 32.0),
               SizedBox(
                 width: 200,
@@ -131,7 +137,8 @@ class _BookingState extends State<Booking> {
   bool isFormValid() {
     return isNameValid &&
         isPhoneNumberValid &&
-        isSeatPositionValid &&
+        isEmailValid &&
+        isNumberOfTicketsValid &&
         numberOfTickets > 0;
   }
 }

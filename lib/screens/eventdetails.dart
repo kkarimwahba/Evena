@@ -1,5 +1,7 @@
 import 'package:evena/screens/Booking.dart';
+import 'package:evena/screens/SeatReservation.dart';
 import 'package:flutter/material.dart';
+import 'package:evena/screens/mappage.dart';
 
 class EventDetails extends StatefulWidget {
   EventDetails({Key? key}) : super(key: key);
@@ -33,7 +35,6 @@ class _EventDetailsState extends State<EventDetails> {
                 Container(
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(0)),
-                    // color: Color.fromARGB(255, 255, 170, 0)),
                     color: Colors.white,
                   ),
                   child: Column(
@@ -53,6 +54,8 @@ class _EventDetailsState extends State<EventDetails> {
                           ),
                         ),
                       ),
+                      // Include the MapPage widget here
+                      MapPage(),
                       const Align(
                         alignment: AlignmentDirectional(-1, 0),
                         child: Padding(
@@ -148,7 +151,7 @@ class _EventDetailsState extends State<EventDetails> {
                         child: Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(15, 16, 0, 0),
                           child: Text(
-                            'Current : Avaliable. ',
+                            'Current : Available. ',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 15,
@@ -168,13 +171,13 @@ class _EventDetailsState extends State<EventDetails> {
                             ),
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                builder: (c) {
-                                  return Booking();
+                                builder: (context) {
+                                  return SeatReservation();
                                 },
                               ));
                             },
                             child: const Text(
-                              'Book Now!',
+                              'Reserve Seat',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
