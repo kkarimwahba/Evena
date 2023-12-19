@@ -35,6 +35,7 @@ class UserHome extends StatefulWidget {
 
 class _UserHomeState extends State<UserHome> {
   final TextEditingController _searchController = TextEditingController();
+
   List<Event> allEvents = [];
   List<Event> filteredEvents = [];
 
@@ -82,6 +83,46 @@ class _UserHomeState extends State<UserHome> {
       appBar: AppBar(
         title: const Text('Event List'),
       ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('events').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text('No events available.'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var event =
+                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
+              return EventCard(
+                imagePath: event['image'] ?? '',
+                title: event['title'] ?? '',
+                description: event['description'] ?? '',
+                date: DateTime.parse(event['date'] ?? ''),
+                time: event['time'] ?? '',
+                location: event['location'] ?? '',
+                category: event['category'] ?? '',
+                price: event['price']?.toString() ?? '',
+                // Add image field if stored in Firestore
+                // imagePath: event['imagePath'] ?? '',
+                availability: event['availability']?.toString() ?? '',
+              );
+            },
+          );
+        },
+
       body: Column(
         children: [
           SizedBox(
@@ -145,6 +186,9 @@ class EventCard extends StatelessWidget {
   final String location;
   final String category;
   final String price;
+  // Add image field if stored in Firestore
+  final String imagePath;
+
   final String availability;
 
   EventCard({
@@ -155,6 +199,9 @@ class EventCard extends StatelessWidget {
     required this.location,
     required this.category,
     required this.price,
+    // Add image field if stored in Firestore
+    required this.imagePath,
+
     required this.availability,
   });
 
@@ -165,6 +212,12 @@ class EventCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Add Image widget here if imagePath is used
+          Image.network(
+            imagePath,
+            fit: BoxFit.cover,
+            height: 200, // Set the desired height
+          ),
           ListTile(
             title: Text(title),
             subtitle: Text('Date: ${date.toLocal()}'),
@@ -197,6 +250,8 @@ class EventCard extends StatelessWidget {
                     location: location,
                     category: category,
                     price: price,
+                    // Add image field if stored in Firestore
+                    imagePath: imagePath,
                     availability: availability,
                   ),
                 ),

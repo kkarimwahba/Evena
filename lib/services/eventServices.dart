@@ -24,7 +24,9 @@
 //     }
 //   }
 // }
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EventService {
   final CollectionReference eventsCollection =
@@ -39,6 +41,7 @@ class EventService {
     }
   }
 }
+
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:evena/models/events.dart';
 // import 'package:firebase_storage/firebase_storage.dart';

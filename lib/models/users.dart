@@ -1,5 +1,6 @@
 import 'ticket.dart';
 
+
 class UserBase {
   String uid;
   String username;
@@ -29,3 +30,4 @@ class UserBase {
       };
     }
 }
+
