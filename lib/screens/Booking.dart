@@ -1,7 +1,13 @@
 import 'package:evena/screens/Payment.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Booking extends StatefulWidget {
+  final List<int> selectedSeats;
+
+  const Booking({Key? key, required this.selectedSeats}) : super(key: key);
+
   @override
   _BookingState createState() => _BookingState();
 }
@@ -9,14 +15,17 @@ class Booking extends StatefulWidget {
 class _BookingState extends State<Booking> {
   String name = '';
   String phoneNumber = '';
-  String seatPosition = '';
-  int numberOfTickets = 1;
+  String email = '';
 
   // Validation flags
   bool isNameValid = true;
   bool isPhoneNumberValid = true;
-  bool isSeatPositionValid = true;
-  bool isNumberOfTicketsValid = true;
+  bool isEmailValid = true;
+
+  TextEditingController cardNumberController = TextEditingController();
+  TextEditingController expiryDateController = TextEditingController();
+  TextEditingController cardHolderNameController = TextEditingController();
+  TextEditingController cvvCodeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +40,7 @@ class _BookingState extends State<Booking> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Name Text Field
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Name',
@@ -44,6 +54,8 @@ class _BookingState extends State<Booking> {
                 },
               ),
               const SizedBox(height: 16.0),
+
+              // Phone Number Text Field
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
@@ -55,54 +67,51 @@ class _BookingState extends State<Booking> {
                 onChanged: (value) {
                   setState(() {
                     phoneNumber = value;
-                    isPhoneNumberValid =
-                        RegExp(r'^\d{3}-\d{3}-\d{4}$').hasMatch(value);
+                    isPhoneNumberValid = value.isNotEmpty;
                   });
                 },
               ),
               const SizedBox(height: 16.0),
+
+              // Email Text Field
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Seat Position',
-                  errorText: isSeatPositionValid
+                  labelText: 'Email',
+                  errorText: isEmailValid
                       ? null
-                      : 'Please enter a valid position',
+                      : 'Please enter a valid email address',
                 ),
+                keyboardType: TextInputType.emailAddress,
                 onChanged: (value) {
                   setState(() {
-                    seatPosition = value;
-                    isSeatPositionValid = value.isNotEmpty;
+                    email = value;
+                    isEmailValid =
+                        RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                            .hasMatch(value);
                   });
                 },
               ),
               const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Number of Tickets'),
-                  DropdownButton<int>(
-                    value: numberOfTickets,
-                    items: [1, 2, 3, 4, 5]
-                        .map((int value) => DropdownMenuItem<int>(
-                              value: value,
-                              child: Text(value.toString()),
-                            ))
-                        .toList(),
-                    onChanged: (int? value) {
-                      setState(() {
-                        numberOfTickets = value ?? 1;
-                      });
-                    },
-                  ),
-                ],
+
+              // Display selected seats dynamically
+              const SizedBox(height: 16.0),
+              Text(
+                "Selected Seats: ${widget.selectedSeats.join(', ')}",
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 32.0),
+              const SizedBox(height: 16.0),
+              // ... (similar fields for expiry date, card holder name, and CVV)
+
+              const SizedBox(height: 20),
               SizedBox(
                 width: 200,
                 height: 60,
                 child: ElevatedButton(
                   onPressed: isFormValid()
-                      ? () {
+                      ? () async {
+                          await storeUserData();
+                          await reserveSeats(widget.selectedSeats);
+                          await saveCardInformation();
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (c) {
                               return Payment();
@@ -129,9 +138,65 @@ class _BookingState extends State<Booking> {
   }
 
   bool isFormValid() {
-    return isNameValid &&
-        isPhoneNumberValid &&
-        isSeatPositionValid &&
-        numberOfTickets > 0;
+    return isNameValid && isPhoneNumberValid && isEmailValid;
+  }
+
+  Future<void> storeUserData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').add({
+          'name': name,
+          'phone': phoneNumber,
+          'email': email,
+          'seatsnum': widget.selectedSeats,
+        });
+      }
+    } catch (e) {
+      print("Error storing user data: $e");
+    }
+  }
+
+  Future<void> reserveSeats(List<int> selectedSeats) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        String userUid = user.uid;
+        await FirebaseFirestore.instance
+            .collection('/users/$user/Booking')
+            .doc(userUid)
+            .set({'seats': selectedSeats});
+      }
+    } catch (e) {
+      print("Error reserving seats: $e");
+    }
+  }
+
+  Future<void> saveCardInformation() async {
+    // Get current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // Create a reference to the user's document in the 'cards' collection
+        DocumentReference cardRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('cards')
+            .doc();
+
+        // Save card information to Firestore
+        await cardRef.set({
+          'cardNumber': cardNumberController.text,
+          'expiryDate': expiryDateController.text,
+          'cardHolderName': cardHolderNameController.text,
+          'cvvCode': cvvCodeController.text,
+        });
+      } catch (e) {
+        print("Error saving card information: $e");
+      }
+    }
   }
 }

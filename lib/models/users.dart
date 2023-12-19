@@ -1,17 +1,33 @@
 import 'ticket.dart';
 
-class User {
-  String name;
+
+class UserBase {
+  String uid;
+  String username;
   String email;
   String password;
   String phone;
-  List<Ticket> tickets;
+  List<Ticket>? tickets;
 
-  User({
-    required this.name,
+  UserBase({
+    required this.uid,
+    required this.username,
     required this.email,
     required this.password,
     required this.phone,
-    required this.tickets,
-  });
+    this.tickets,
+    });
+
+
+    tojson()
+    {
+      return{
+        "name":username,
+        "email":email,
+        "password":password,
+        "phone":phone,
+        
+      };
+    }
 }
+
