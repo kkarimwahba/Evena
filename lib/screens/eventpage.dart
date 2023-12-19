@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:evena/screens/SeatReservation.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailsPage extends StatelessWidget {
@@ -59,6 +60,24 @@ class EventDetailsPage extends StatelessWidget {
               title: Text('Availability: $availability'),
             ),
             // Add any other details you want to display
+            Align(
+              alignment: const AlignmentDirectional(0, 0),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) {
+                        return SeatReservation();
+                      },
+                    ));
+                  },
+                  child: const Text(
+                    'Reserve Seat',
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
