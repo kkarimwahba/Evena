@@ -1,6 +1,11 @@
+import 'package:evena/models/users.dart';
+import 'package:evena/services/firebase_auth.dart';
+import 'package:evena/services/userServices.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:evena/screens/login.dart';
 import 'package:evena/screens/adminHome.dart';
+import 'package:uuid/uuid.dart';
 
 class Signup extends StatefulWidget {
   Signup({Key? key}) : super(key: key);
@@ -8,6 +13,11 @@ class Signup extends StatefulWidget {
   @override
   _SignupState createState() => _SignupState();
 }
+var uuid=Uuid();
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+TextEditingController usernamecontroller = TextEditingController();
+TextEditingController phonenumbercontroller= TextEditingController();
 
 class _SignupState extends State<Signup> {
   @override
@@ -74,6 +84,7 @@ class _SignupState extends State<Signup> {
                       SizedBox(
                         width: 0.9 * MediaQuery.of(context).size.width,
                         child: TextFormField(
+                          controller: usernamecontroller,
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
                             labelText: 'Username',
@@ -100,6 +111,7 @@ class _SignupState extends State<Signup> {
                       SizedBox(
                         width: 0.9 * MediaQuery.of(context).size.width,
                         child: TextFormField(
+                          controller: emailController,
                           style: const TextStyle(color: Colors.black),
                           decoration: const InputDecoration(
                             labelText: 'Email',
@@ -125,6 +137,7 @@ class _SignupState extends State<Signup> {
                       SizedBox(
                         width: 0.9 * MediaQuery.of(context).size.width,
                         child: TextFormField(
+                          controller: passwordController,
                           obscureText: true,
                           style: const TextStyle(color: Colors.black),
                           decoration: const InputDecoration(
@@ -156,6 +169,7 @@ class _SignupState extends State<Signup> {
                       SizedBox(
                         width: 0.9 * MediaQuery.of(context).size.width,
                         child: TextFormField(
+                          controller: phonenumbercontroller,
                           style: const TextStyle(color: Colors.black),
                           decoration: const InputDecoration(
                             labelText: 'Phone No.',
@@ -182,10 +196,19 @@ class _SignupState extends State<Signup> {
                         width: 0.8 * MediaQuery.of(context).size.width,
                         height: 0.13 * MediaQuery.of(context).size.width,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            final user=UserBase(
+                            uid:uuid.v4(),
+                            username: usernamecontroller.text.trim(),
+                            email: emailController.text.trim(),
+                            password: passwordController.text.trim(),
+                            phone: phonenumbercontroller.text.trim(),
+                            );
+                            User? user1=await registerWithEmailAndPassword(emailController.text.trim(), passwordController.text.trim());
+                            signup(user);
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) {
-                                return const Admin();
+                                return  Login();
                               },
                             ));
                           },
@@ -201,6 +224,7 @@ class _SignupState extends State<Signup> {
                       const SizedBox(height: 20),
                       GestureDetector(
                         onTap: () {
+                        
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (c) {
                               return Login();
