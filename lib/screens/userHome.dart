@@ -12,7 +12,6 @@ class UserHome extends StatefulWidget {
 
 class _UserHomeState extends State<UserHome> {
   final TextEditingController _searchController = TextEditingController();
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -280,6 +279,7 @@ class _UserHomeState extends State<UserHome> {
                   snapshot.data!.docs[index].data() as Map<String, dynamic>;
 
               return EventCard(
+                imagePath: event['image'] ?? '',
                 title: event['title'] ?? '',
                 description: event['description'] ?? '',
                 date: DateTime.parse(event['date'] ?? ''),
@@ -308,7 +308,7 @@ class EventCard extends StatelessWidget {
   final String category;
   final String price;
   // Add image field if stored in Firestore
-  // final String imagePath;
+  final String imagePath;
   final String availability;
 
   EventCard({
@@ -320,7 +320,7 @@ class EventCard extends StatelessWidget {
     required this.category,
     required this.price,
     // Add image field if stored in Firestore
-    // required this.imagePath,
+    required this.imagePath,
     required this.availability,
   });
 
@@ -332,7 +332,11 @@ class EventCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Add Image widget here if imagePath is used
-          // Image.network(imagePath),
+          Image.network(
+            imagePath,
+            fit: BoxFit.cover,
+            height: 200, // Set the desired height
+          ),
           ListTile(
             title: Text(title),
             subtitle: Text('Date: ${date.toLocal()}'),
@@ -367,7 +371,7 @@ class EventCard extends StatelessWidget {
                     category: category,
                     price: price,
                     // Add image field if stored in Firestore
-                    // imagePath: imagePath,
+                    imagePath: imagePath,
                     availability: availability,
                   ),
                 ),

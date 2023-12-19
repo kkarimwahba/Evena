@@ -10,7 +10,7 @@ class EventDetailsPage extends StatelessWidget {
   final String category;
   final String price;
   // Add image field if stored in Firestore
-  // final String imagePath;
+  final String imagePath;
   final String availability;
 
   EventDetailsPage({
@@ -22,7 +22,7 @@ class EventDetailsPage extends StatelessWidget {
     required this.category,
     required this.price,
     // Add image field if stored in Firestore
-    // required this.imagePath,
+    required this.imagePath,
     required this.availability,
   });
 
@@ -38,7 +38,7 @@ class EventDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Add Image widget here if imagePath is used
-            // Image.network(imagePath),
+            Image.network(imagePath),
             ListTile(
               title: Text(title),
               subtitle: Text('Date: ${date.toLocal()}'),
