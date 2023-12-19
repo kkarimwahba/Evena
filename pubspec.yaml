@@ -49,6 +49,9 @@ dependencies:
   image_picker: ^1.0.5
   firebase_storage: ^11.5.6
 
+  uuid: ^4.2.2
+  
+
 
 
 dev_dependencies:
