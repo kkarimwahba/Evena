@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:evena/models/events.dart';
 import 'package:evena/services/eventServices.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class AddEventPage extends StatefulWidget {
   @override
@@ -16,7 +20,8 @@ class _AddEventPageState extends State<AddEventPage> {
   TextEditingController eventCategoryController = TextEditingController();
   TextEditingController eventAvailabilityController = TextEditingController();
   TextEditingController eventTimeController = TextEditingController();
-
+  File? _pickedImage;
+  String _imageUrl = '';
   @override
   void dispose() {
     eventNameController.dispose();
@@ -28,6 +33,40 @@ class _AddEventPageState extends State<AddEventPage> {
     eventAvailabilityController.dispose();
     eventTimeController.dispose();
     super.dispose();
+  }
+
+  // Function to pick an image from the gallery
+  Future<void> pickImageFromGallery() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _pickedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+// Function to upload the image to Firebase Storage
+  Future<String?> uploadImageToStorage() async {
+    try {
+      if (_pickedImage != null) {
+        // Create a reference to the Firebase Storage bucket
+        var storageReference = firebase_storage.FirebaseStorage.instance
+            .ref()
+            .child('event_images/${DateTime.now().millisecondsSinceEpoch}');
+
+        // Upload the file to Firebase Storage
+        await storageReference.putFile(_pickedImage!);
+
+        // Get the download URL of the uploaded file
+        return await storageReference.getDownloadURL();
+      }
+      return null;
+    } catch (e) {
+      print('Error uploading image to Firebase Storage: $e');
+      return null;
+    }
   }
 
   @override
@@ -121,23 +160,40 @@ class _AddEventPageState extends State<AddEventPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
+              onPressed: pickImageFromGallery,
+              child: Text('Pick Image from Gallery'),
+            ),
+            ElevatedButton(
               onPressed: () async {
-                Event newEvent = Event(
-                  title: eventNameController.text.trim(),
-                  description: eventDescriptionController.text.trim(),
-                  date: DateTime.parse(eventDateController.text.trim()),
-                  time: eventTimeController.text.trim(),
-                  location: eventLocationController.text.trim(),
-                  category: eventCategoryController.text.trim(),
-                  price: double.parse(eventPriceController.text.trim()),
-                  image: 'cairokee.jpg',
-                  availability:
-                      int.parse(eventAvailabilityController.text.trim()),
-                );
+                // Call the function to pick an image from the gallery
+                await pickImageFromGallery();
 
-                EventService eventService = EventService();
-                await eventService
-                    .addEvent(newEvent.toJson() as Map<String, dynamic>);
+                // If an image is picked, upload it to Firebase Storage
+                String? imageUrl = await uploadImageToStorage();
+
+                // If image upload is successful, update the URL and proceed to add the event
+                if (imageUrl != null) {
+                  setState(() {
+                    _imageUrl = imageUrl;
+                  });
+
+                  Event newEvent = Event(
+                    title: eventNameController.text.trim(),
+                    description: eventDescriptionController.text.trim(),
+                    date: DateTime.parse(eventDateController.text.trim()),
+                    time: eventTimeController.text.trim(),
+                    location: eventLocationController.text.trim(),
+                    category: eventCategoryController.text.trim(),
+                    price: double.parse(eventPriceController.text.trim()),
+                    image: imageUrl,
+                    availability:
+                        int.parse(eventAvailabilityController.text.trim()),
+                  );
+
+                  EventService eventService = EventService();
+                  await eventService
+                      .addEvent(newEvent.toJson() as Map<String, dynamic>);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amberAccent[700],
