@@ -1,3 +1,5 @@
+import 'package:evena/models/events.dart';
+import 'package:evena/services/eventServices.dart';
 import 'package:flutter/material.dart';
 
 class AddEventPage extends StatefulWidget {
@@ -6,18 +8,25 @@ class AddEventPage extends StatefulWidget {
 }
 
 class _AddEventPageState extends State<AddEventPage> {
-  TextEditingController _eventNameController = TextEditingController();
-  TextEditingController _eventDescriptionController = TextEditingController();
-  TextEditingController _eventDateController = TextEditingController();
-  TextEditingController _eventPriceController = TextEditingController();
-  TextEditingController _eventLocationController = TextEditingController();
+  TextEditingController eventNameController = TextEditingController();
+  TextEditingController eventDescriptionController = TextEditingController();
+  TextEditingController eventDateController = TextEditingController();
+  TextEditingController eventPriceController = TextEditingController();
+  TextEditingController eventLocationController = TextEditingController();
+  TextEditingController eventCategoryController = TextEditingController();
+  TextEditingController eventAvailabilityController = TextEditingController();
+  TextEditingController eventTimeController = TextEditingController();
 
   @override
   void dispose() {
-    _eventNameController.dispose();
-    _eventDescriptionController.dispose();
-    _eventDateController.dispose();
-    _eventPriceController.dispose();
+    eventNameController.dispose();
+    eventDescriptionController.dispose();
+    eventDateController.dispose();
+    eventPriceController.dispose();
+    eventLocationController.dispose();
+    eventCategoryController.dispose();
+    eventAvailabilityController.dispose();
+    eventTimeController.dispose();
     super.dispose();
   }
 
@@ -34,7 +43,7 @@ class _AddEventPageState extends State<AddEventPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
-              controller: _eventNameController,
+              controller: eventNameController,
               decoration: const InputDecoration(
                 labelText: 'Event Name',
                 border: OutlineInputBorder(),
@@ -42,7 +51,7 @@ class _AddEventPageState extends State<AddEventPage> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              controller: _eventDescriptionController,
+              controller: eventDescriptionController,
               maxLines: 3,
               decoration: const InputDecoration(
                 labelText: 'Event Description',
@@ -51,9 +60,33 @@ class _AddEventPageState extends State<AddEventPage> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              controller: _eventLocationController,
+              controller: eventLocationController,
               decoration: const InputDecoration(
                 labelText: 'Event Location',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: eventTimeController,
+              decoration: const InputDecoration(
+                labelText: 'Event time',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: eventCategoryController,
+              decoration: const InputDecoration(
+                labelText: 'Event category',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: eventAvailabilityController,
+              decoration: const InputDecoration(
+                labelText: 'Event Availability',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -62,7 +95,7 @@ class _AddEventPageState extends State<AddEventPage> {
               children: [
                 Expanded(
                   child: TextFormField(
-                    controller: _eventDateController,
+                    controller: eventDateController,
                     decoration: InputDecoration(
                       labelText: 'Event Date',
                       border: const OutlineInputBorder(),
@@ -76,7 +109,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextFormField(
-                    controller: _eventPriceController,
+                    controller: eventPriceController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       labelText: 'Price (\$)',
@@ -88,11 +121,23 @@ class _AddEventPageState extends State<AddEventPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                String eventName = _eventNameController.text;
-                String eventDescription = _eventDescriptionController.text;
-                String eventDate = _eventDateController.text;
-                String eventPrice = _eventPriceController.text;
+              onPressed: () async {
+                Event newEvent = Event(
+                  title: eventNameController.text.trim(),
+                  description: eventDescriptionController.text.trim(),
+                  date: DateTime.parse(eventDateController.text.trim()),
+                  time: eventTimeController.text.trim(),
+                  location: eventLocationController.text.trim(),
+                  category: eventCategoryController.text.trim(),
+                  price: double.parse(eventPriceController.text.trim()),
+                  image: 'cairokee.jpg',
+                  availability:
+                      int.parse(eventAvailabilityController.text.trim()),
+                );
+
+                EventService eventService = EventService();
+                await eventService
+                    .addEvent(newEvent.toJson() as Map<String, dynamic>);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amberAccent[700],
