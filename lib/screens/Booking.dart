@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'Payment.dart'; // Assuming you have a Payment page
 
 class Booking extends StatefulWidget {
@@ -15,13 +16,16 @@ class _BookingState extends State<Booking> {
   String name = '';
   String phoneNumber = '';
   String email = '';
-  int numberOfTickets = 1;
 
   // Validation flags
   bool isNameValid = true;
   bool isPhoneNumberValid = true;
   bool isEmailValid = true;
-  bool isNumberOfTicketsValid = true;
+
+  TextEditingController cardNumberController = TextEditingController();
+  TextEditingController expiryDateController = TextEditingController();
+  TextEditingController cardHolderNameController = TextEditingController();
+  TextEditingController cvvCodeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +67,7 @@ class _BookingState extends State<Booking> {
                 onChanged: (value) {
                   setState(() {
                     phoneNumber = value;
+                    isPhoneNumberValid = value.isNotEmpty;
                   });
                 },
               ),
@@ -95,10 +100,9 @@ class _BookingState extends State<Booking> {
                 style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16.0),
+              // ... (similar fields for expiry date, card holder name, and CVV)
 
-              // Add other form fields or details as needed
-
-              const SizedBox(height: 32.0),
+              const SizedBox(height: 20),
               SizedBox(
                 width: 200,
                 height: 60,
@@ -107,6 +111,7 @@ class _BookingState extends State<Booking> {
                       ? () async {
                           await storeUserData();
                           await reserveSeats(widget.selectedSeats);
+                          await saveCardInformation();
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (c) {
                               return Payment();
@@ -133,21 +138,21 @@ class _BookingState extends State<Booking> {
   }
 
   bool isFormValid() {
-    return isNameValid &&
-        isPhoneNumberValid &&
-        isEmailValid &&
-        isNumberOfTicketsValid &&
-        numberOfTickets > 0;
+    return isNameValid && isPhoneNumberValid && isEmailValid;
   }
 
   Future<void> storeUserData() async {
     try {
-      await FirebaseFirestore.instance.collection('users').add({
-        'name': name,
-        'phone': phoneNumber,
-        'email': email,
-        'seatsnum': widget.selectedSeats, // Use widget.selectedSeats
-      });
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').add({
+          'name': name,
+          'phone': phoneNumber,
+          'email': email,
+          'seatsnum': widget.selectedSeats,
+        });
+      }
     } catch (e) {
       print("Error storing user data: $e");
     }
@@ -155,11 +160,43 @@ class _BookingState extends State<Booking> {
 
   Future<void> reserveSeats(List<int> selectedSeats) async {
     try {
-      await FirebaseFirestore.instance.collection('seats').add({
-        'seats': selectedSeats,
-      });
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        String userUid = user.uid;
+        await FirebaseFirestore.instance
+            .collection('/users/$user/Booking')
+            .doc(userUid)
+            .set({'seats': selectedSeats});
+      }
     } catch (e) {
       print("Error reserving seats: $e");
+    }
+  }
+
+  Future<void> saveCardInformation() async {
+    // Get current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // Create a reference to the user's document in the 'cards' collection
+        DocumentReference cardRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('cards')
+            .doc();
+
+        // Save card information to Firestore
+        await cardRef.set({
+          'cardNumber': cardNumberController.text,
+          'expiryDate': expiryDateController.text,
+          'cardHolderName': cardHolderNameController.text,
+          'cvvCode': cvvCodeController.text,
+        });
+      } catch (e) {
+        print("Error saving card information: $e");
+      }
     }
   }
 }

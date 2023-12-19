@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/userHome.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
@@ -91,6 +93,9 @@ class _PaymentState extends State<Payment> {
                 if (_formKey.currentState!.validate()) {
                   // Perform payment confirmation logic here
                   showAlertDialog(context);
+
+                  // Save card information to Firebase after confirming payment
+                  saveCardInformation();
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -122,7 +127,7 @@ class _PaymentState extends State<Payment> {
     );
   }
 
-  void showAlertDialog(BuildContext context) {
+  void showAlertDialog(BuildContext context) async {
     Widget okButton = ElevatedButton(
       child: const Text("Ok"),
       onPressed: () {
@@ -148,5 +153,25 @@ class _PaymentState extends State<Payment> {
         return alert;
       },
     );
+  }
+
+  Future<void> saveCardInformation() async {
+    // Get current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // Create a reference to the user's document in the 'cards' collection
+      DocumentReference cardRef = FirebaseFirestore.instance
+          .collection('/users/$user/payment')
+          .doc(user.uid);
+
+      // Save card information to Firestore
+      await cardRef.set({
+        'cardNumber': cardNumberController.text,
+        'expiryDate': expiryDateController.text,
+        'cardHolderName': cardHolderNameController.text,
+        'cvvCode': cvvCodeController.text,
+      });
+    }
   }
 }
