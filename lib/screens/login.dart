@@ -1,29 +1,28 @@
+import 'package:evena/screens/adminHome.dart';
 import 'package:evena/screens/category.dart';
 import 'package:evena/screens/signup.dart';
+import 'package:evena/screens/userHome.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-Future<User?> signinwithemailandpassword(String email, String password)
-async{
+Future<User?> signinwithemailandpassword(String email, String password) async {
   try {
-  final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-    email: email,
-    password: password
-  );
-  print(credential.user?.uid);
-  return credential.user;
-  
-} on FirebaseAuthException catch (e) {
-  if (e.code == 'user-not-found') {
-    print('No user found for that email.');
-  } else if (e.code == 'wrong-password') {
-    print('Wrong password provided for that user.');
+    final credential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+    print(credential.user?.uid);
+    return credential.user;
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found') {
+      print('No user found for that email.');
+    } else if (e.code == 'wrong-password') {
+      print('Wrong password provided for that user.');
+    }
   }
 }
-}
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
 
 class Login extends StatefulWidget {
   Login({Key? key}) : super(key: key);
@@ -158,22 +157,20 @@ class _LoginState extends State<Login> {
                         width: 0.8 * MediaQuery.of(context).size.width,
                         height: 0.13 * MediaQuery.of(context).size.width,
                         child: ElevatedButton(
-                          onPressed: ()async {
-
-                            User? user=await signinwithemailandpassword(emailController.text.trim(), passwordController.text.trim());
-                            if(user!= null)
-                            {
+                          onPressed: () async {
+                            User? user = await signinwithemailandpassword(
+                                emailController.text.trim(),
+                                passwordController.text.trim());
+                            if (user != null) {
                               Navigator.of(context).push(MaterialPageRoute(
-                              builder: (c) {
-                                return Category();
-                              },
-                            ));
-                            }else {
+                                builder: (c) {
+                                  return const UserHome();
+                                },
+                              ));
+                            } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text(
-                                  'Wrong Email or password'
-                                )
-                                ),
+                                const SnackBar(
+                                    content: Text('Wrong Email or password')),
                               );
                             }
                           },
