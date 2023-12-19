@@ -55,7 +55,7 @@ class _EventDetailsState extends State<EventDetails> {
                         ),
                       ),
                       // Include the MapPage widget here
-                      MapPage(),
+                      /* MapPage(),
                       const Align(
                         alignment: AlignmentDirectional(-1, 0),
                         child: Padding(
@@ -69,7 +69,7 @@ class _EventDetailsState extends State<EventDetails> {
                             ),
                           ),
                         ),
-                      ),
+                      ),*/
                       const Row(
                         children: [
                           Expanded(

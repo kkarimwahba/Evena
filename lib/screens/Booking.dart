@@ -1,9 +1,8 @@
-// Import necessary packages
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Payment.dart'; // Assuming you have a Payment page
 
 class Booking extends StatefulWidget {
-  // Add a parameter to accept selected seats
   final List<int> selectedSeats;
 
   const Booking({Key? key, required this.selectedSeats}) : super(key: key);
@@ -64,8 +63,6 @@ class _BookingState extends State<Booking> {
                 onChanged: (value) {
                   setState(() {
                     phoneNumber = value;
-                    isPhoneNumberValid =
-                        RegExp(r'^\d{3}-\d{3}-\d{4}$').hasMatch(value);
                   });
                 },
               ),
@@ -91,14 +88,13 @@ class _BookingState extends State<Booking> {
               ),
               const SizedBox(height: 16.0),
 
-              // Existing code for seat position and number of tickets
-
-              // Display selected seats
+              // Display selected seats dynamically
               const SizedBox(height: 16.0),
               Text(
-                "Selected Seats: ${widget.selectedSeats}",
+                "Selected Seats: ${widget.selectedSeats.join(', ')}",
                 style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
+              const SizedBox(height: 16.0),
 
               // Add other form fields or details as needed
 
@@ -108,7 +104,9 @@ class _BookingState extends State<Booking> {
                 height: 60,
                 child: ElevatedButton(
                   onPressed: isFormValid()
-                      ? () {
+                      ? () async {
+                          await storeUserData();
+                          await reserveSeats(widget.selectedSeats);
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (c) {
                               return Payment();
@@ -140,5 +138,28 @@ class _BookingState extends State<Booking> {
         isEmailValid &&
         isNumberOfTicketsValid &&
         numberOfTickets > 0;
+  }
+
+  Future<void> storeUserData() async {
+    try {
+      await FirebaseFirestore.instance.collection('users').add({
+        'name': name,
+        'phone': phoneNumber,
+        'email': email,
+        'seatsnum': widget.selectedSeats, // Use widget.selectedSeats
+      });
+    } catch (e) {
+      print("Error storing user data: $e");
+    }
+  }
+
+  Future<void> reserveSeats(List<int> selectedSeats) async {
+    try {
+      await FirebaseFirestore.instance.collection('seats').add({
+        'seats': selectedSeats,
+      });
+    } catch (e) {
+      print("Error reserving seats: $e");
+    }
   }
 }

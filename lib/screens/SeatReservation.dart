@@ -1,5 +1,6 @@
 import 'package:evena/screens/Booking.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SeatReservation extends StatefulWidget {
   const SeatReservation({Key? key}) : super(key: key);
@@ -11,75 +12,41 @@ class SeatReservation extends StatefulWidget {
 class _SeatReservationState extends State<SeatReservation> {
   final int columns = 9;
   final int rows = 11;
-  late List<bool> isSeatSelected; // Use late initialization
-
-  List<int> reservedSeats = [
-    2,
-    3,
-    4,
-    5,
-    8,
-    10,
-    11,
-    14,
-    16,
-    17,
-    18,
-    19,
-    20,
-    21,
-    27,
-    28,
-    32,
-    33,
-    34,
-    39,
-    40,
-    41,
-    42,
-    43,
-    44,
-    45,
-    48,
-    49,
-    50,
-    51,
-    52,
-    53,
-    54,
-    61,
-    62,
-    69,
-    70,
-    71,
-    72,
-    73,
-    74,
-    75,
-    76,
-    77,
-    78,
-    79,
-    85,
-    86,
-    92,
-    93,
-    94,
-    95,
-    100,
-    101,
-    102,
-    103,
-    106,
-    107,
-    108
-  ]; // Example: Seats already reserved
+  late List<SeatStatus> seatStatusList;
+  bool seatsReserved = false;
+  List<int> selectedSeats = []; // Declare selectedSeats as a class variable
 
   @override
   void initState() {
     super.initState();
-    // Initialize isSeatSelected list with false values
-    isSeatSelected = List.generate(columns * rows, (index) => false);
+    seatStatusList =
+        List.generate(columns * rows, (index) => SeatStatus.available);
+    fetchReservedSeats();
+  }
+
+  Future<void> fetchReservedSeats() async {
+    try {
+      // Fetch reserved seats from Firestore
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('seats').get();
+
+      // Update seatStatusList based on reserved seats
+      querySnapshot.docs.forEach((doc) {
+        List<int> reservedSeats = List<int>.from(doc['seats']);
+        reservedSeats.forEach((seatNumber) {
+          setState(() {
+            seatStatusList[seatNumber - 1] = SeatStatus.reserved;
+          });
+        });
+      });
+
+      // Update the UI to reflect the reserved seats
+      setState(() {
+        seatsReserved = seatStatusList.contains(SeatStatus.reserved);
+      });
+    } catch (e) {
+      print("Error fetching reserved seats: $e");
+    }
   }
 
   @override
@@ -97,7 +64,6 @@ class _SeatReservationState extends State<SeatReservation> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            // Seat Map
             GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: columns,
@@ -108,24 +74,23 @@ class _SeatReservationState extends State<SeatReservation> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 int seatNumber = index + 1;
-                bool isReserved = reservedSeats.contains(seatNumber);
-                bool isSelected = isSeatSelected[index];
+                SeatStatus seatStatus = seatStatusList[index];
 
                 return GestureDetector(
                   onTap: () {
-                    if (!isReserved) {
-                      setState(() {
-                        isSeatSelected[index] = !isSelected;
-                      });
-                    }
+                    setState(() {
+                      if (seatStatus == SeatStatus.available) {
+                        seatStatusList[index] = SeatStatus.selected;
+                        selectedSeats.add(seatNumber);
+                      } else if (seatStatus == SeatStatus.selected) {
+                        seatStatusList[index] = SeatStatus.available;
+                        selectedSeats.remove(seatNumber);
+                      }
+                    });
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isReserved
-                          ? Colors.grey // Reserved seat color
-                          : isSelected
-                              ? Colors.red // Selected seat color
-                              : Colors.green, // Available seat color
+                      color: getSeatColor(seatStatus),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.black),
                     ),
@@ -133,10 +98,7 @@ class _SeatReservationState extends State<SeatReservation> {
                       child: Text(
                         seatNumber.toString(),
                         style: TextStyle(
-                          color: isReserved
-                              ? Colors.black // Reserved seat text color
-                              : Colors
-                                  .white, // Available or Selected seat text color
+                          color: getTextColor(seatStatus),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -147,26 +109,69 @@ class _SeatReservationState extends State<SeatReservation> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                List<int> selectedSeats = [];
-                for (int i = 0; i < isSeatSelected.length; i++) {
-                  if (isSeatSelected[i]) {
-                    selectedSeats.add(i + 1);
-                  }
-                }
-                // Navigate to Booking page with selected seats
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Booking(selectedSeats: selectedSeats),
-                  ),
-                );
+              onPressed: () async {
+                await reserveSeats(selectedSeats);
+                checkReservationStatus();
               },
               child: Text("Reserve Seats"),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (c) {
+                    return Booking(
+                      selectedSeats: selectedSeats,
+                    );
+                  },
+                ));
+              },
+              child: Text("Go to Booking Page"),
             ),
           ],
         ),
       ),
     );
   }
+
+  Future<void> reserveSeats(List<int> selectedSeats) async {
+    try {
+      // Add reservation to Firestore
+      await FirebaseFirestore.instance.collection('seats').add({
+        'seats': selectedSeats,
+      });
+
+      // Optionally, you can perform additional actions after reservation
+    } catch (e) {
+      print("Error reserving seats: $e");
+    }
+  }
+
+  void checkReservationStatus() {
+    // You can customize this logic based on your requirements
+    setState(() {
+      seatsReserved = seatStatusList.contains(SeatStatus.reserved);
+    });
+  }
+
+  Color getSeatColor(SeatStatus status) {
+    switch (status) {
+      case SeatStatus.available:
+        return Colors.green;
+      case SeatStatus.selected:
+        return Colors.orange;
+      case SeatStatus.reserved:
+        return Colors.red;
+    }
+  }
+
+  Color getTextColor(SeatStatus status) {
+    return status == SeatStatus.available ? Colors.white : Colors.black;
+  }
+}
+
+enum SeatStatus {
+  available,
+  selected,
+  reserved,
 }
