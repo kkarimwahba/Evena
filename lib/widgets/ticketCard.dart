@@ -68,8 +68,13 @@ class _TicketCardState extends State<TicketCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.black,
+                    ),
                   ),
                   const Text(
                     'Your Ticket',
@@ -80,7 +85,10 @@ class _TicketCardState extends State<TicketCard> {
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: const Icon(Icons.menu),
+                    icon: const Icon(
+                      Icons.menu,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),

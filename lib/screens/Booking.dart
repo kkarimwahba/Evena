@@ -54,119 +54,113 @@ class _BookingState extends State<Booking> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          title: const Text('Booking'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Name Text Field
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  errorText: isNameValid ? null : 'Please enter a valid name',
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Booking'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Name Text Field
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Name',
+                errorText: isNameValid ? null : 'Please enter a valid name',
+              ),
+              onChanged: (value) {
+                setState(() {
+                  name = value;
+                  isNameValid = value.isNotEmpty;
+                });
+              },
+            ),
+            const SizedBox(height: 16.0),
+
+            // Phone Number Text Field
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
+                errorText: isPhoneNumberValid
+                    ? null
+                    : 'Please enter a valid phone number (e.g., 123-456-7890)',
+              ),
+              keyboardType: TextInputType.phone,
+              onChanged: (value) {
+                setState(() {
+                  phoneNumber = value;
+                  isPhoneNumberValid = value.isNotEmpty;
+                });
+              },
+            ),
+            const SizedBox(height: 16.0),
+
+            // Email Text Field
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Email',
+                errorText:
+                    isEmailValid ? null : 'Please enter a valid email address',
+              ),
+              keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                setState(() {
+                  email = value;
+                  isEmailValid =
+                      RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                          .hasMatch(value);
+                });
+              },
+            ),
+            const SizedBox(height: 16.0),
+
+            // Display selected seats dynamically
+            const SizedBox(height: 16.0),
+            Text(
+              "Selected Seats: ${widget.selectedSeats.join(', ')}",
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16.0),
+            // ... (similar fields for expiry date, card holder name, and CVV)
+
+            const SizedBox(height: 20),
+            SizedBox(
+              width: 200,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: isFormValid()
+                    ? () async {
+                        // await storeUserData();
+                        await reserveSeats(widget.selectedSeats);
+                        // await saveCardInformation();
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (c) {
+                            return Payment(
+                              title: widget.title,
+                              description: widget.description,
+                              date: widget.date,
+                              time: widget.time,
+                              location: widget.location,
+                              category: widget.category,
+                              price: widget.price,
+                              imagePath: widget.imagePath,
+                              availability: widget.availability,
+                            );
+                          },
+                        ));
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 255, 170, 0),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    name = value;
-                    isNameValid = value.isNotEmpty;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
-
-              // Phone Number Text Field
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  errorText: isPhoneNumberValid
-                      ? null
-                      : 'Please enter a valid phone number (e.g., 123-456-7890)',
-                ),
-                keyboardType: TextInputType.phone,
-                onChanged: (value) {
-                  setState(() {
-                    phoneNumber = value;
-                    isPhoneNumberValid = value.isNotEmpty;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
-
-              // Email Text Field
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  errorText: isEmailValid
-                      ? null
-                      : 'Please enter a valid email address',
-                ),
-                keyboardType: TextInputType.emailAddress,
-                onChanged: (value) {
-                  setState(() {
-                    email = value;
-                    isEmailValid =
-                        RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                            .hasMatch(value);
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
-
-              // Display selected seats dynamically
-              const SizedBox(height: 16.0),
-              Text(
-                "Selected Seats: ${widget.selectedSeats.join(', ')}",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16.0),
-              // ... (similar fields for expiry date, card holder name, and CVV)
-
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 200,
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: isFormValid()
-                      ? () async {
-                          // await storeUserData();
-                          await reserveSeats(widget.selectedSeats);
-                          // await saveCardInformation();
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (c) {
-                              return Payment(
-                                title: widget.title,
-                                description: widget.description,
-                                date: widget.date,
-                                time: widget.time,
-                                location: widget.location,
-                                category: widget.category,
-                                price: widget.price,
-                                imagePath: widget.imagePath,
-                                availability: widget.availability,
-                              );
-                            },
-                          ));
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 255, 170, 0),
-                  ),
-                  child: const Text(
-                    'Checkout',
-                    style: TextStyle(
-                      fontSize: 25,
-                    ),
-                  ),
+                child: const Text(
+                  'Checkout',
+                  style: TextStyle(fontSize: 25, color: Colors.black),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

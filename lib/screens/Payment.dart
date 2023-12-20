@@ -5,11 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
-
 User? user = FirebaseAuth.instance.currentUser;
 
 String? userUid = user?.uid;
-String? useremail =user?.email;
+String? useremail = user?.email;
 
 class Payment extends StatefulWidget {
   // Add the required event details as parameters to the constructor
@@ -123,7 +122,6 @@ class _PaymentState extends State<Payment> {
                 if (_formKey.currentState!.validate()) {
                   // Perform payment confirmation logic here
                   showAlertDialog(context);
-                  
 
                   // Save card information to Firebase after confirming payment
                   saveCardInformation();
@@ -150,7 +148,7 @@ class _PaymentState extends State<Payment> {
               ),
               child: const Text(
                 'Confirm Payment',
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 18, color: Colors.black),
               ),
             ),
           ),
@@ -158,17 +156,14 @@ class _PaymentState extends State<Payment> {
       ),
     );
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Payment Page'),
-          backgroundColor: Colors.black,
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: creditCardForm,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Payment Page'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: creditCardForm,
         ),
       ),
     );
