@@ -81,26 +81,36 @@ class EventDetailsPage extends StatelessWidget {
 //                     ));
 // =======
                     if (category.toLowerCase() == 'design') {
-                       Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) {
-                        return SeatReservation(
-                          title: title,
-                          description: description,
-                          date: date,
-                          time: time,
-                          location: location,
-                          category: category,
-                          price: price,
-                          imagePath: imagePath,
-                          availability: availability,
-                        );
-                      },
-                    ));
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) {
+                          return SeatReservation(
+                            title: title,
+                            description: description,
+                            date: date,
+                            time: time,
+                            location: location,
+                            category: category,
+                            price: price,
+                            imagePath: imagePath,
+                            availability: availability,
+                          );
+                        },
+                      ));
                     } else {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) {
                           return Booking(
-                              selectedSeats: []); // Example, replace with actual data
+                            selectedSeats: [],
+                            title: this.title,
+                            description: this.description,
+                            date: this.date,
+                            time: this.time,
+                            location: this.location,
+                            category: this.category,
+                            price: this.price,
+                            imagePath: this.imagePath,
+                            availability: this.availability,
+                          ); // Example, replace with actual data
                         },
                       ));
                     }

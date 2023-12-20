@@ -35,7 +35,6 @@ class UserHome extends StatefulWidget {
 }
 
 class _UserHomeState extends State<UserHome> {
-
   final TextEditingController _searchController = TextEditingController();
 
   List<Event> allEvents = [];
@@ -74,7 +73,7 @@ class _UserHomeState extends State<UserHome> {
 
   @override
   void dispose() {
-    searchController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -118,40 +117,41 @@ class _UserHomeState extends State<UserHome> {
 //                     borderRadius: BorderRadius.circular(10),
 //                   ),
 // =======
-      drawer: DrawerWidget(
-           title: 'Event Page',      
-      ),
-      appBar: AppBar(
-        title: const Text('Event List'),
-      ),
-      body: Column(
-        children: [
-          SizedBox(
-            width: 0.9 * MediaQuery.of(context).size.width,
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                // Update the filteredEvents list when the user types in the search bar
-                setState(() {
-                  filteredEvents = allEvents
-                      .where((event) =>
-                          event.title
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          event.category
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          event.time
-                              .toLowerCase()
-                              .contains(value.toLowerCase()))
-                      .toList();
-                });
-              },
-              decoration: InputDecoration(
-                hintText: "Search",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+        drawer: DrawerWidget(
+          title: 'Event Page',
+        ),
+        appBar: AppBar(
+          title: const Text('Event List'),
+        ),
+        body: Column(
+          children: [
+            SizedBox(
+              width: 0.9 * MediaQuery.of(context).size.width,
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  // Update the filteredEvents list when the user types in the search bar
+                  setState(() {
+                    filteredEvents = allEvents
+                        .where((event) =>
+                            event.title
+                                .toLowerCase()
+                                .contains(value.toLowerCase()) ||
+                            event.category
+                                .toLowerCase()
+                                .contains(value.toLowerCase()) ||
+                            event.time
+                                .toLowerCase()
+                                .contains(value.toLowerCase()))
+                        .toList();
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: "Search",
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ),
@@ -231,6 +231,11 @@ class EventCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Image.network(
+            imagePath,
+            fit: BoxFit.cover,
+            height: 200, // Set the desired height
+          ),
           ListTile(
             title: Text(title),
             subtitle: Text('Date: ${date.toLocal()}'),
@@ -264,7 +269,7 @@ class EventCard extends StatelessWidget {
                     category: category,
                     price: price,
                     imagePath: imagePath,
-                    availability: availability, 
+                    availability: availability,
                   ),
                 ),
               );
