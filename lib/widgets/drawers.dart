@@ -21,8 +21,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               color: Colors.white,
             ),
             child: CircleAvatar(
-              radius: 100,
-              backgroundImage: AssetImage('assets/images/messi.jpg'),
+              backgroundColor: Colors.white,
+              radius: 50,
+              backgroundImage: AssetImage('assets/images/user.png'),
             )),
         ListTile(
           title: const Text('Home'),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/category.dart';
 import 'package:evena/screens/eventdetails.dart';
 import 'package:evena/screens/eventpage.dart';
+import 'package:evena/widgets/drawers.dart';
 import 'package:flutter/material.dart';
 
 class Event {
@@ -34,7 +35,7 @@ class UserHome extends StatefulWidget {
 }
 
 class _UserHomeState extends State<UserHome> {
-  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   List<Event> allEvents = [];
   List<Event> filteredEvents = [];
@@ -42,11 +43,9 @@ class _UserHomeState extends State<UserHome> {
   @override
   void initState() {
     super.initState();
-    // Fetch events from Firestore when the widget is initialized
     fetchEvents();
   }
 
-  // Function to fetch events from Firestore
   void fetchEvents() async {
     final snapshot =
         await FirebaseFirestore.instance.collection('events').get();
@@ -63,6 +62,7 @@ class _UserHomeState extends State<UserHome> {
           category: event['category'] ?? '',
           price: event['price']?.toString() ?? '',
           availability: event['availability']?.toString() ?? '',
+          // Add image field if stored in Firestore
         );
       }).toList();
 
@@ -73,108 +73,94 @@ class _UserHomeState extends State<UserHome> {
 
   @override
   void dispose() {
-    _searchController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Event List'),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('events').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text('No events available.'),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var event =
-                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
-
-              return EventCard(
-                imagePath: event['image'] ?? '',
-                title: event['title'] ?? '',
-                description: event['description'] ?? '',
-                date: DateTime.parse(event['date'] ?? ''),
-                time: event['time'] ?? '',
-                location: event['location'] ?? '',
-                category: event['category'] ?? '',
-                price: event['price']?.toString() ?? '',
-                // Add image field if stored in Firestore
-                // imagePath: event['imagePath'] ?? '',
-                availability: event['availability']?.toString() ?? '',
-              );
-            },
-          );
-        },
-
-      body: Column(
-        children: [
-          SizedBox(
-            width: 0.9 * MediaQuery.of(context).size.width,
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                // Update the filteredEvents list when the user types in the search bar
-                setState(() {
-                  filteredEvents = allEvents
-                      .where((event) =>
-                          event.title
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          event.category
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          event.time
-                              .toLowerCase()
-                              .contains(value.toLowerCase()))
-                      .toList();
-                });
-              },
-              decoration: InputDecoration(
-                hintText: "Search",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+        drawer: DrawerWidget(
+          title: 'Event Page',
+        ),
+        appBar: AppBar(
+          title: const Text('Event List'),
+        ),
+        body: Column(
+          children: [
+            SizedBox(
+              width: 1 * MediaQuery.of(context).size.width,
+              child: TextField(
+                controller: searchController,
+                onChanged: (value) {
+                  // Update the filteredEvents list when the user types in the search bar
+                  setState(() {
+                    filteredEvents = allEvents
+                        .where((event) =>
+                            event.title
+                                .toLowerCase()
+                                .contains(value.toLowerCase()) ||
+                            event.category
+                                .toLowerCase()
+                                .contains(value.toLowerCase()) ||
+                            event.time
+                                .toLowerCase()
+                                .contains(value.toLowerCase()))
+                        .toList();
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: "Search",
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredEvents.length,
-              itemBuilder: (context, index) {
-                return EventCard(
-                  title: filteredEvents[index].title,
-                  description: filteredEvents[index].description,
-                  date: filteredEvents[index].date,
-                  time: filteredEvents[index].time,
-                  location: filteredEvents[index].location,
-                  category: filteredEvents[index].category,
-                  price: filteredEvents[index].price,
-                  availability: filteredEvents[index].availability,
-                );
-              },
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance.collection('events').snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(
+                      child: Text('No events available.'),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      var event = snapshot.data!.docs[index].data()
+                          as Map<String, dynamic>;
+
+                      return EventCard(
+                        imagePath: event['image'] ?? '',
+                        title: event['title'] ?? '',
+                        description: event['description'] ?? '',
+                        date: DateTime.parse(event['date'] ?? ''),
+                        time: event['time'] ?? '',
+                        location: event['location'] ?? '',
+                        category: event['category'] ?? '',
+                        price: event['price']?.toString() ?? '',
+                        availability: event['availability']?.toString() ?? '',
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ));
   }
 }
 
@@ -186,9 +172,7 @@ class EventCard extends StatelessWidget {
   final String location;
   final String category;
   final String price;
-  // Add image field if stored in Firestore
   final String imagePath;
-
   final String availability;
 
   EventCard({
@@ -199,9 +183,7 @@ class EventCard extends StatelessWidget {
     required this.location,
     required this.category,
     required this.price,
-    // Add image field if stored in Firestore
     required this.imagePath,
-
     required this.availability,
   });
 
@@ -250,7 +232,6 @@ class EventCard extends StatelessWidget {
                     location: location,
                     category: category,
                     price: price,
-                    // Add image field if stored in Firestore
                     imagePath: imagePath,
                     availability: availability,
                   ),

@@ -5,8 +5,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class Booking extends StatefulWidget {
   final List<int> selectedSeats;
+  final String title;
+  final String description;
+  final DateTime date;
+  final String time;
+  final String location;
+  final String category;
+  final String price;
+  final String imagePath;
+  final String availability;
 
-  const Booking({Key? key, required this.selectedSeats}) : super(key: key);
+  const Booking({
+    Key? key,
+    required this.selectedSeats,
+    required this.title,
+    required this.description,
+    required this.date,
+    required this.time,
+    required this.location,
+    required this.category,
+    required this.price,
+    required this.imagePath,
+    required this.availability,
+  }) : super(key: key);
 
   @override
   _BookingState createState() => _BookingState();
@@ -114,7 +135,17 @@ class _BookingState extends State<Booking> {
                           await saveCardInformation();
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (c) {
-                              return Payment();
+                              return Payment(
+                                title: widget.title,
+                                description: widget.description,
+                                date: widget.date,
+                                time: widget.time,
+                                location: widget.location,
+                                category: widget.category,
+                                price: widget.price,
+                                imagePath: widget.imagePath,
+                                availability: widget.availability,
+                              );
                             },
                           ));
                         }

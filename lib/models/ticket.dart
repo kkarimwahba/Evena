@@ -1,9 +1,7 @@
-import 'events.dart';
+import 'package:evena/models/events.dart';
 
 class Ticket {
-  double price;
-  int seats;
-  Event event;
-
-  Ticket(this.price, this.seats, this.event);
+ Event event;
+ int price;
+ Ticket({required this.event, required this.price});
 }

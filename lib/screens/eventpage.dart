@@ -68,7 +68,17 @@ class EventDetailsPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) {
-                        return SeatReservation();
+                        return SeatReservation(
+                          title: title,
+                          description: description,
+                          date: date,
+                          time: time,
+                          location: location,
+                          category: category,
+                          price: price,
+                          imagePath: imagePath,
+                          availability: availability,
+                        );
                       },
                     ));
                   },
