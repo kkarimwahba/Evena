@@ -1,4 +1,5 @@
 import 'package:evena/screens/login.dart';
+import 'package:evena/screens/profile.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +32,18 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             Navigator.of(context).push(MaterialPageRoute(
               builder: (c) {
                 return const UserHome();
+              },
+            ));
+          },
+        ),
+             ListTile(
+          title: const Text('Profile'),
+          trailing: const Icon(Icons.account_tree_rounded
+          ),
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (c) {
+                return ProfilePage();
               },
             ));
           },
