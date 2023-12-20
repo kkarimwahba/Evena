@@ -1,4 +1,11 @@
+import 'package:evena/screens/signup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'ticket.dart';
+
+
+ User? user=FirebaseAuth.instance.currentUser;
+
 
 class UserBase {
   String uid;
@@ -6,6 +13,7 @@ class UserBase {
   String email;
   String password;
   String phone;
+  String? role;
   List<Ticket>? tickets;
 
   UserBase({
@@ -14,15 +22,22 @@ class UserBase {
     required this.email,
     required this.password,
     required this.phone,
+    this.role='user',
     this.tickets,
   });
 
-  tojson() {
-    return {
-      "name": username,
-      "email": email,
-      "password": password,
-      "phone": phone,
-    };
-  }
+
+    tojson()
+    {
+      return{
+        'uid':user?.uid,
+        "name":username,
+        "email":email,
+        "password":password,
+        "phone":phone,
+        "role":role,
+        
+      };
+    }
+
 }

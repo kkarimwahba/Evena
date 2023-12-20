@@ -197,17 +197,11 @@ class _SignupState extends State<Signup> {
                         height: 0.13 * MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                           onPressed: () async {
-                            final user = UserBase(
-                              uid: uuid.v4(),
-                              username: usernamecontroller.text.trim(),
-                              email: emailController.text.trim(),
-                              password: passwordController.text.trim(),
-                              phone: phonenumbercontroller.text.trim(),
-                            );
-                            User? user1 = await registerWithEmailAndPassword(
-                                emailController.text.trim(),
-                                passwordController.text.trim());
-                            signup(user);
+
+                           
+                            User? user1=await registerWithEmailAndPassword(emailController.text.trim(), passwordController.text.trim(),usernamecontroller.text.trim(),phonenumbercontroller.text.trim());
+                          
+
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) {
                                 return Login();
