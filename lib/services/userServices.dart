@@ -3,12 +3,8 @@ import 'package:evena/models/users.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-final db=FirebaseFirestore.instance;
+final db = FirebaseFirestore.instance;
 
-
-
-signup(UserBase user)
-{
+signup(UserBase user) {
   db.collection('users').add(user.tojson());
 }
-
