@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-User? user = FirebaseAuth.instance.currentUser;
 
-String? userUid = user?.uid;
+
+
+
 
 class Booking extends StatefulWidget {
   final List<int> selectedSeats;
@@ -180,18 +181,46 @@ class _BookingState extends State<Booking> {
   //   }
   // }
 
+  // Future<void> reserveSeats(List<int> selectedSeats) async {
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //    String? userId = user!.uid;
+  //   try {
+      
+  //     if (user != null) {
+  //      DocumentReference userdocref= FirebaseFirestore.instance.collection('users').doc(userId);
+  //       CollectionReference ticketsCollectionRef = userdocref.collection('tickets');
+  //       await ticketsCollectionRef
+  //           .add({'seats': selectedSeats});
+  //     }
+  //   } catch (e) {
+  //     print("Error reserving seats: $e");
+  //   }
+  // }
   Future<void> reserveSeats(List<int> selectedSeats) async {
-    try {
-      if (user != null) {
-        await FirebaseFirestore.instance
-            .collection('/users/$userUid/tickets')
-            .doc(userUid)
-            .set({'seats': selectedSeats});
-      }
-    } catch (e) {
-      print("Error reserving seats: $e");
+  try {
+    // Get all documents from the "users" collection
+    QuerySnapshot<Map<String, dynamic>> usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
+
+    // Iterate through each user document and create a "tickets" subcollection
+    for (QueryDocumentSnapshot<Map<String, dynamic>> userSnapshot in usersSnapshot.docs) {
+      String userId = userSnapshot.id; // Get the user ID
+
+      // Reference to the "tickets" subcollection for the current user
+      CollectionReference ticketsCollectionRef = userSnapshot.reference.collection('tickets');
+
+      // Add the selected seats directly to the "tickets" subcollection
+      await ticketsCollectionRef.add({
+        'seats': selectedSeats,
+        
+        // Add other ticket-related data if needed
+      });
+
+      print('Seats reserved successfully for user ID: $userId');
     }
+  } catch (e) {
+    print("Error reserving seats: $e");
   }
+}
 
   // Future<void> saveCardInformation() async {
   //   // Get current user
