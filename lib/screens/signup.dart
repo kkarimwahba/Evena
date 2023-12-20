@@ -4,7 +4,6 @@ import 'package:evena/services/userServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:evena/screens/login.dart';
-import 'package:evena/screens/adminHome.dart';
 import 'package:uuid/uuid.dart';
 
 class Signup extends StatefulWidget {
@@ -211,7 +210,6 @@ class _SignupState extends State<Signup> {
                             signup(user);
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) {
-
                                 return Login();
                               },
                             ));

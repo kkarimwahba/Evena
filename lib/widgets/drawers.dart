@@ -1,3 +1,4 @@
+import 'package:evena/screens/adminHome.dart';
 import 'package:evena/screens/login.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,17 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             ));
           },
         ),
+        // ListTile(
+        //   title: const Text('Admin'),
+        //   trailing: const Icon(Icons.home),
+        //   onTap: () {
+        //     Navigator.of(context).push(MaterialPageRoute(
+        //       builder: (c) {
+        //         return const Admin();
+        //       },
+        //     ));
+        //   },
+        // ),
         ListTile(
           trailing: const Icon(Icons.event_busy),
           title: const Text('Reservations'),

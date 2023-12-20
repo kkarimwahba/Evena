@@ -1,9 +1,6 @@
-import 'package:evena/screens/adminHome.dart';
-import 'package:evena/screens/category.dart';
 import 'package:evena/screens/signup.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:evena/services/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
