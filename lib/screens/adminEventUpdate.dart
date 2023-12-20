@@ -25,14 +25,14 @@ class Event {
   });
 }
 
-class UserHome extends StatefulWidget {
-  const UserHome({Key? key}) : super(key: key);
+class AdminEventUpdate extends StatefulWidget {
+  const AdminEventUpdate({Key? key}) : super(key: key);
 
   @override
-  _UserHomeState createState() => _UserHomeState();
+  _AdminEventUpdateState createState() => _AdminEventUpdateState();
 }
 
-class _UserHomeState extends State<UserHome> {
+class _AdminEventUpdateState extends State<AdminEventUpdate> {
   final TextEditingController _searchController = TextEditingController();
 
   List<Event> allEvents = [];
@@ -115,9 +115,6 @@ class _UserHomeState extends State<UserHome> {
 //                     borderRadius: BorderRadius.circular(10),
 //                   ),
 // =======
-        drawer: DrawerWidget(
-          title: 'Event Page',
-        ),
         appBar: AppBar(
           title: const Text('Event List'),
         ),
@@ -272,7 +269,7 @@ class EventCard extends StatelessWidget {
                 ),
               );
             },
-            child: const Text('Book Now!'),
+            child: const Text('Update!'),
           ),
         ],
       ),

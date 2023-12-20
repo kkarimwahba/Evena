@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/adminHome.dart';
 import 'package:evena/screens/category.dart';
@@ -6,10 +7,9 @@ import 'package:evena/screens/userHome.dart';
 import 'package:evena/services/firebase_auth.dart';
 import 'package:evena/services/userServices.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-
 
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();

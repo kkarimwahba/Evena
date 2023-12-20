@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/userHome.dart';
+import 'package:evena/widgets/ticketCard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
@@ -11,6 +12,29 @@ String? userUid = user?.uid;
 String? useremail =user?.email;
 
 class Payment extends StatefulWidget {
+  // Add the required event details as parameters to the constructor
+  final String title;
+  final String description;
+  final DateTime date;
+  final String time;
+  final String location;
+  final String category;
+  final String price;
+  final String imagePath;
+  final String availability;
+
+  Payment({
+    required this.title,
+    required this.description,
+    required this.date,
+    required this.time,
+    required this.location,
+    required this.category,
+    required this.price,
+    required this.imagePath,
+    required this.availability,
+  });
+
   @override
   _PaymentState createState() => _PaymentState();
 }
@@ -104,6 +128,22 @@ class _PaymentState extends State<Payment> {
                   // Save card information to Firebase after confirming payment
                   saveCardInformation();
                 }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TicketCard(
+                      title: widget.title,
+                      description: widget.description,
+                      date: widget.date,
+                      time: widget.time,
+                      location: widget.location,
+                      category: widget.category,
+                      price: widget.price,
+                      imagePath: widget.imagePath,
+                      availability: widget.availability,
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 255, 170, 0),

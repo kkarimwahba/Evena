@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'ticket.dart';
 
+
  User? user=FirebaseAuth.instance.currentUser;
+
 
 class UserBase {
   String uid;
@@ -22,7 +24,7 @@ class UserBase {
     required this.phone,
     this.role='user',
     this.tickets,
-    });
+  });
 
 
     tojson()
@@ -37,5 +39,5 @@ class UserBase {
         
       };
     }
-}
 
+}

@@ -1,3 +1,4 @@
+import 'package:evena/screens/adminHome.dart';
 import 'package:evena/screens/login.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               color: Colors.white,
             ),
             child: CircleAvatar(
-              radius: 100,
-              backgroundImage: AssetImage('assets/images/messi.jpg'),
+              backgroundColor: Colors.white,
+              radius: 50,
+              backgroundImage: AssetImage('assets/images/user.png'),
             )),
         ListTile(
           title: const Text('Home'),
@@ -35,6 +37,17 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             ));
           },
         ),
+        // ListTile(
+        //   title: const Text('Admin'),
+        //   trailing: const Icon(Icons.home),
+        //   onTap: () {
+        //     Navigator.of(context).push(MaterialPageRoute(
+        //       builder: (c) {
+        //         return const Admin();
+        //       },
+        //     ));
+        //   },
+        // ),
         ListTile(
           trailing: const Icon(Icons.event_busy),
           title: const Text('Reservations'),

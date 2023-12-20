@@ -4,7 +4,6 @@ import 'package:evena/services/userServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:evena/screens/login.dart';
-import 'package:evena/screens/adminHome.dart';
 import 'package:uuid/uuid.dart';
 
 class Signup extends StatefulWidget {
@@ -13,11 +12,12 @@ class Signup extends StatefulWidget {
   @override
   _SignupState createState() => _SignupState();
 }
-var uuid=Uuid();
+
+var uuid = Uuid();
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 TextEditingController usernamecontroller = TextEditingController();
-TextEditingController phonenumbercontroller= TextEditingController();
+TextEditingController phonenumbercontroller = TextEditingController();
 
 class _SignupState extends State<Signup> {
   @override
@@ -197,12 +197,14 @@ class _SignupState extends State<Signup> {
                         height: 0.13 * MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                           onPressed: () async {
+
                            
                             User? user1=await registerWithEmailAndPassword(emailController.text.trim(), passwordController.text.trim(),usernamecontroller.text.trim(),phonenumbercontroller.text.trim());
                           
+
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) {
-                                return  Login();
+                                return Login();
                               },
                             ));
                           },
@@ -218,7 +220,6 @@ class _SignupState extends State<Signup> {
                       const SizedBox(height: 20),
                       GestureDetector(
                         onTap: () {
-                        
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (c) {
                               return Login();

@@ -1,4 +1,4 @@
-import 'package:evena/screens/adminHome.dart';
+import 'package:evena/screens/adminEventUpdate.dart';
 import 'package:evena/screens/signup.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,6 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Profile'),
-        backgroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -52,7 +51,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (c) {
-                    return const Admin();
+                    return const AdminEventUpdate();
                   },
                 ));
               },
