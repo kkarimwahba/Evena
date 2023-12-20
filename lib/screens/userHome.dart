@@ -35,7 +35,8 @@ class UserHome extends StatefulWidget {
 }
 
 class _UserHomeState extends State<UserHome> {
-  final TextEditingController searchController = TextEditingController();
+
+  final TextEditingController _searchController = TextEditingController();
 
   List<Event> allEvents = [];
   List<Event> filteredEvents = [];
@@ -80,41 +81,77 @@ class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: DrawerWidget(
-          title: 'Event Page',
-        ),
-        appBar: AppBar(
-          title: const Text('Event List'),
-        ),
-        body: Column(
-          children: [
-            SizedBox(
-              width: 1 * MediaQuery.of(context).size.width,
-              child: TextField(
-                controller: searchController,
-                onChanged: (value) {
-                  // Update the filteredEvents list when the user types in the search bar
-                  setState(() {
-                    filteredEvents = allEvents
-                        .where((event) =>
-                            event.title
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            event.category
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            event.time
-                                .toLowerCase()
-                                .contains(value.toLowerCase()))
-                        .toList();
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: "Search",
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+// <<<<<<< ticketDesign
+//         drawer: DrawerWidget(
+//           title: 'Event Page',
+//         ),
+//         appBar: AppBar(
+//           title: const Text('Event List'),
+//         ),
+//         body: Column(
+//           children: [
+//             SizedBox(
+//               width: 1 * MediaQuery.of(context).size.width,
+//               child: TextField(
+//                 controller: searchController,
+//                 onChanged: (value) {
+//                   // Update the filteredEvents list when the user types in the search bar
+//                   setState(() {
+//                     filteredEvents = allEvents
+//                         .where((event) =>
+//                             event.title
+//                                 .toLowerCase()
+//                                 .contains(value.toLowerCase()) ||
+//                             event.category
+//                                 .toLowerCase()
+//                                 .contains(value.toLowerCase()) ||
+//                             event.time
+//                                 .toLowerCase()
+//                                 .contains(value.toLowerCase()))
+//                         .toList();
+//                   });
+//                 },
+//                 decoration: InputDecoration(
+//                   hintText: "Search",
+//                   prefixIcon: const Icon(Icons.search),
+//                   border: OutlineInputBorder(
+//                     borderRadius: BorderRadius.circular(10),
+//                   ),
+// =======
+      drawer: DrawerWidget(
+           title: 'Event Page',      
+      ),
+      appBar: AppBar(
+        title: const Text('Event List'),
+      ),
+      body: Column(
+        children: [
+          SizedBox(
+            width: 0.9 * MediaQuery.of(context).size.width,
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                // Update the filteredEvents list when the user types in the search bar
+                setState(() {
+                  filteredEvents = allEvents
+                      .where((event) =>
+                          event.title
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          event.category
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          event.time
+                              .toLowerCase()
+                              .contains(value.toLowerCase()))
+                      .toList();
+                });
+              },
+              decoration: InputDecoration(
+                hintText: "Search",
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
@@ -194,12 +231,6 @@ class EventCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Add Image widget here if imagePath is used
-          Image.network(
-            imagePath,
-            fit: BoxFit.cover,
-            height: 200, // Set the desired height
-          ),
           ListTile(
             title: Text(title),
             subtitle: Text('Date: ${date.toLocal()}'),
@@ -233,7 +264,7 @@ class EventCard extends StatelessWidget {
                     category: category,
                     price: price,
                     imagePath: imagePath,
-                    availability: availability,
+                    availability: availability, 
                   ),
                 ),
               );

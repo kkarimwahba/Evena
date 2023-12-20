@@ -1,6 +1,5 @@
 import 'ticket.dart';
 
-
 class UserBase {
   String uid;
   String username;
@@ -16,18 +15,14 @@ class UserBase {
     required this.password,
     required this.phone,
     this.tickets,
-    });
+  });
 
-
-    tojson()
-    {
-      return{
-        "name":username,
-        "email":email,
-        "password":password,
-        "phone":phone,
-        
-      };
-    }
+  tojson() {
+    return {
+      "name": username,
+      "email": email,
+      "password": password,
+      "phone": phone,
+    };
+  }
 }
-

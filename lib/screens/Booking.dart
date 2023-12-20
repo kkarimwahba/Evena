@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+User? user = FirebaseAuth.instance.currentUser;
+
+String? userUid = user?.uid;
+
 class Booking extends StatefulWidget {
   final List<int> selectedSeats;
   final String title;
@@ -130,9 +134,9 @@ class _BookingState extends State<Booking> {
                 child: ElevatedButton(
                   onPressed: isFormValid()
                       ? () async {
-                          await storeUserData();
+                          // await storeUserData();
                           await reserveSeats(widget.selectedSeats);
-                          await saveCardInformation();
+                          // await saveCardInformation();
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (c) {
                               return Payment(
@@ -172,31 +176,21 @@ class _BookingState extends State<Booking> {
     return isNameValid && isPhoneNumberValid && isEmailValid;
   }
 
-  Future<void> storeUserData() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        await FirebaseFirestore.instance.collection('users').add({
-          'name': name,
-          'phone': phoneNumber,
-          'email': email,
-          'seatsnum': widget.selectedSeats,
-        });
-      }
-    } catch (e) {
-      print("Error storing user data: $e");
-    }
-  }
+  // Future<void> storeUserData() async {
+  //   try {
+  //     if (user != null) {
+  //       await FirebaseFirestore.instance.collection('users').add({});
+  //     }
+  //   } catch (e) {
+  //     print("Error storing user data: $e");
+  //   }
+  // }
 
   Future<void> reserveSeats(List<int> selectedSeats) async {
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-
       if (user != null) {
-        String userUid = user.uid;
         await FirebaseFirestore.instance
-            .collection('/users/$user/Booking')
+            .collection('/users/$userUid/tickets')
             .doc(userUid)
             .set({'seats': selectedSeats});
       }
@@ -205,29 +199,28 @@ class _BookingState extends State<Booking> {
     }
   }
 
-  Future<void> saveCardInformation() async {
-    // Get current user
-    User? user = FirebaseAuth.instance.currentUser;
+  // Future<void> saveCardInformation() async {
+  //   // Get current user
 
-    if (user != null) {
-      try {
-        // Create a reference to the user's document in the 'cards' collection
-        DocumentReference cardRef = FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .collection('cards')
-            .doc();
+  //   if (user != null) {
+  //     try {
+  //       // Create a reference to the user's document in the 'cards' collection
+  //       DocumentReference cardRef = FirebaseFirestore.instance
+  //           .collection('users')
+  //           .doc(user.uid)
+  //           .collection('cards')
+  //           .doc();
 
-        // Save card information to Firestore
-        await cardRef.set({
-          'cardNumber': cardNumberController.text,
-          'expiryDate': expiryDateController.text,
-          'cardHolderName': cardHolderNameController.text,
-          'cvvCode': cvvCodeController.text,
-        });
-      } catch (e) {
-        print("Error saving card information: $e");
-      }
-    }
-  }
+  //       // Save card information to Firestore
+  //       await cardRef.set({
+  //         'cardNumber': cardNumberController.text,
+  //         'expiryDate': expiryDateController.text,
+  //         'cardHolderName': cardHolderNameController.text,
+  //         'cvvCode': cvvCodeController.text,
+  //       });
+  //     } catch (e) {
+  //       print("Error saving card information: $e");
+  //     }
+  //   }
+  // }
 }

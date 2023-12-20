@@ -5,6 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
+User? user = FirebaseAuth.instance.currentUser;
+
+String? userUid = user?.uid;
+
 class Payment extends StatefulWidget {
   // Add the required event details as parameters to the constructor
   final String title;
@@ -202,8 +206,8 @@ class _PaymentState extends State<Payment> {
     if (user != null) {
       // Create a reference to the user's document in the 'cards' collection
       DocumentReference cardRef = FirebaseFirestore.instance
-          .collection('/users/$user/payment')
-          .doc(user.uid);
+          .collection('/users/$userUid/payment')
+          .doc(userUid);
 
       // Save card information to Firestore
       await cardRef.set({

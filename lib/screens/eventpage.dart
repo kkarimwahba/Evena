@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/SeatReservation.dart';
+import 'package:evena/screens/Booking.dart'; // Import your Booking screen
 import 'package:flutter/material.dart';
 
 class EventDetailsPage extends StatelessWidget {
@@ -10,7 +11,6 @@ class EventDetailsPage extends StatelessWidget {
   final String location;
   final String category;
   final String price;
-  // Add image field if stored in Firestore
   final String imagePath;
   final String availability;
 
@@ -22,7 +22,6 @@ class EventDetailsPage extends StatelessWidget {
     required this.location,
     required this.category,
     required this.price,
-    // Add image field if stored in Firestore
     required this.imagePath,
     required this.availability,
   });
@@ -38,7 +37,6 @@ class EventDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Add Image widget here if imagePath is used
             Image.network(imagePath),
             ListTile(
               title: Text(title),
@@ -59,14 +57,31 @@ class EventDetailsPage extends StatelessWidget {
             ListTile(
               title: Text('Availability: $availability'),
             ),
-            // Add any other details you want to display
             Align(
               alignment: const AlignmentDirectional(0, 0),
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
+// <<<<<<< ticketDesign
+//                     Navigator.of(context).push(MaterialPageRoute(
+//                       builder: (context) {
+//                         return SeatReservation(
+//                           title: title,
+//                           description: description,
+//                           date: date,
+//                           time: time,
+//                           location: location,
+//                           category: category,
+//                           price: price,
+//                           imagePath: imagePath,
+//                           availability: availability,
+//                         );
+//                       },
+//                     ));
+// =======
+                    if (category.toLowerCase() == 'design') {
+                       Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) {
                         return SeatReservation(
                           title: title,
@@ -81,9 +96,17 @@ class EventDetailsPage extends StatelessWidget {
                         );
                       },
                     ));
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) {
+                          return Booking(
+                              selectedSeats: []); // Example, replace with actual data
+                        },
+                      ));
+                    }
                   },
                   child: const Text(
-                    'Reserve Seat',
+                    'Reservation',
                   ),
                 ),
               ),
