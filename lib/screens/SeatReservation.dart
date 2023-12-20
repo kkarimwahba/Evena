@@ -3,7 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SeatReservation extends StatefulWidget {
-  const SeatReservation({Key? key}) : super(key: key);
+  final String title;
+  final String description;
+  final DateTime date;
+  final String time;
+  final String location;
+  final String category;
+  final String price;
+  final String imagePath;
+  final String availability;
+  const SeatReservation({
+    Key? key,
+    required this.title,
+    required this.description,
+    required this.date,
+    required this.time,
+    required this.location,
+    required this.category,
+    required this.price,
+    required this.imagePath,
+    required this.availability,
+  }) : super(key: key);
 
   @override
   _SeatReservationState createState() => _SeatReservationState();
@@ -122,6 +142,15 @@ class _SeatReservationState extends State<SeatReservation> {
                   builder: (c) {
                     return Booking(
                       selectedSeats: selectedSeats,
+                      title: widget.title,
+                      description: widget.description,
+                      date: widget.date,
+                      time: widget.time,
+                      location: widget.location,
+                      category: widget.category,
+                      price: widget.price,
+                      imagePath: widget.imagePath,
+                      availability: widget.availability,
                     );
                   },
                 ));

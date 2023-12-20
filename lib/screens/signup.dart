@@ -211,6 +211,7 @@ class _SignupState extends State<Signup> {
                             signup(user);
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) {
+
                                 return Login();
                               },
                             ));

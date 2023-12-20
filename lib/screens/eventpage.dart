@@ -63,12 +63,39 @@ class EventDetailsPage extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
                 child: ElevatedButton(
                   onPressed: () {
+// <<<<<<< ticketDesign
+//                     Navigator.of(context).push(MaterialPageRoute(
+//                       builder: (context) {
+//                         return SeatReservation(
+//                           title: title,
+//                           description: description,
+//                           date: date,
+//                           time: time,
+//                           location: location,
+//                           category: category,
+//                           price: price,
+//                           imagePath: imagePath,
+//                           availability: availability,
+//                         );
+//                       },
+//                     ));
+// =======
                     if (category.toLowerCase() == 'design') {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) {
-                          return SeatReservation();
-                        },
-                      ));
+                       Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) {
+                        return SeatReservation(
+                          title: title,
+                          description: description,
+                          date: date,
+                          time: time,
+                          location: location,
+                          category: category,
+                          price: price,
+                          imagePath: imagePath,
+                          availability: availability,
+                        );
+                      },
+                    ));
                     } else {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) {
