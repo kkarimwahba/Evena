@@ -13,7 +13,6 @@ class Mappage extends StatelessWidget {
       body: OpenStreetMapSearchAndPick(
         center: LatLong(30.0626, 31.2195),
         buttonColor: Colors.blue,
-        buttonText: ' Current Location',
         onPicked: (pickedData) {},
       ),
     );
