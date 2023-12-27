@@ -181,46 +181,28 @@ class _BookingState extends State<Booking> {
   //   }
   // }
 
-  // Future<void> reserveSeats(List<int> selectedSeats) async {
-  //   User? user = FirebaseAuth.instance.currentUser;
-  //    String? userId = user!.uid;
-  //   try {
-      
-  //     if (user != null) {
-  //      DocumentReference userdocref= FirebaseFirestore.instance.collection('users').doc(userId);
-  //       CollectionReference ticketsCollectionRef = userdocref.collection('tickets');
-  //       await ticketsCollectionRef
-  //           .add({'seats': selectedSeats});
-  //     }
-  //   } catch (e) {
-  //     print("Error reserving seats: $e");
-  //   }
-  // }
   Future<void> reserveSeats(List<int> selectedSeats) async {
-  try {
-    // Get all documents from the "users" collection
-    QuerySnapshot<Map<String, dynamic>> usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
-
-    // Iterate through each user document and create a "tickets" subcollection
-    for (QueryDocumentSnapshot<Map<String, dynamic>> userSnapshot in usersSnapshot.docs) {
-      String userId = userSnapshot.id; // Get the user ID
-
-      // Reference to the "tickets" subcollection for the current user
-      CollectionReference ticketsCollectionRef = userSnapshot.reference.collection('tickets');
-
-      // Add the selected seats directly to the "tickets" subcollection
-      await ticketsCollectionRef.add({
-        'seats': selectedSeats,
-        
-        // Add other ticket-related data if needed
-      });
-
-      print('Seats reserved successfully for user ID: $userId');
+    User? user = FirebaseAuth.instance.currentUser;
+    try {
+      
+      if (user != null) {
+        QuerySnapshot<Map<String, dynamic>> userRef= await FirebaseFirestore.instance.collection('users').where('uid', isEqualTo: userUid).limit(1).get();
+        if (userRef.docs.isNotEmpty){
+        var firstDocument = userRef.docs.first;
+        var documentRefrence = firstDocument.reference;
+        await documentRefrence.collection('tickets').doc().set(
+          {'seats':selectedSeats}
+        );
+        }
+        else{
+          print('error');
+        }
+      }
+    } catch (e) {
+      print("Error reserving seats: $e");
     }
-  } catch (e) {
-    print("Error reserving seats: $e");
   }
-}
+ 
 
   // Future<void> saveCardInformation() async {
   //   // Get current user
@@ -246,4 +228,4 @@ class _BookingState extends State<Booking> {
   //     }
   //   }
   // }
-}
+  }
