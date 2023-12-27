@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ticket_widget/ticket_widget.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class TicketCard extends StatefulWidget {
@@ -170,11 +171,20 @@ class _TicketCardState extends State<TicketCard> {
                             ],
                           ),
                           Container(
-                            height: 100,
-                            width: 100,
-                            color: Colors.black,
-                            child: Image.asset('assets/images/qrcode.png'),
-                          )
+                              height: 100,
+                              width: 100,
+                              color: Colors.black,
+                              child: QrImageView(
+                                data: widget.title,
+                                version: QrVersions.auto,
+                                size: 320,
+                                gapless: false,
+                                embeddedImage: const AssetImage(
+                                    'assets/images/qrcode.png'),
+                                embeddedImageStyle: const QrEmbeddedImageStyle(
+                                  size: Size(100, 100),
+                                ),
+                              )),
                         ],
                       ),
                     )
