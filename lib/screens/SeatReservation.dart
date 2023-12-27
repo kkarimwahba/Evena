@@ -46,7 +46,8 @@ class _SeatReservationState extends State<SeatReservation> {
 
   Future<void> fetchReservedSeats() async {
     try {
-      // Fetch reserved seats from Firestore based on the event title
+      // Fetch reserved seats for the specific event title from Firestore
+      String title = widget.title;
       DocumentSnapshot seatDocument = await FirebaseFirestore.instance
           .collection('seats')
           .doc(widget.title) // Use event title as the document ID
@@ -56,7 +57,7 @@ class _SeatReservationState extends State<SeatReservation> {
       seatStatusList =
           List.generate(columns * rows, (index) => SeatStatus.available);
 
-      // Update seatStatusList based on reserved seats
+      // Update seatStatusList based on reserved seats for the current event
       if (seatDocument.exists) {
         List<int> reservedSeats = List<int>.from(seatDocument['seats']);
         reservedSeats.forEach((seatNumber) {
@@ -77,13 +78,24 @@ class _SeatReservationState extends State<SeatReservation> {
 
   Future<void> reserveSeats(List<int> selectedSeats) async {
     try {
-      // Add or update reservation to Firestore based on the event title
+      // Fetch existing reserved seats
+      DocumentSnapshot seatDocument = await FirebaseFirestore.instance
+          .collection('seats')
+          .doc(widget.title)
+          .get();
+
+      // Get the current list of reserved seats or initialize an empty list
+      List<int> existingReservedSeats =
+          List<int>.from(seatDocument['seats'] ?? []);
+
+      // Add newly reserved seats to the existing list
+      existingReservedSeats.addAll(selectedSeats);
+
+      // Update reservation in Firestore
       await FirebaseFirestore.instance
           .collection('seats')
-          .doc(widget.title) // Use event title as the document ID
-          .set({
-        'seats': selectedSeats,
-      }, SetOptions(merge: true));
+          .doc(widget.title)
+          .set({'seats': existingReservedSeats}, SetOptions(merge: true));
 
       // Optionally, you can perform additional actions after reservation
     } catch (e) {
@@ -117,7 +129,7 @@ class _SeatReservationState extends State<SeatReservation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Seat Reservation"),
+        title: Text("Seat Reservation for ${widget.title}"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
