@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/eventpage.dart';
-import 'package:evena/widgets/drawers.dart';
 import 'package:flutter/material.dart';
 
 class Event {
@@ -124,9 +123,6 @@ class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerWidget(
-        title: 'Event Page',
-      ),
       appBar: AppBar(
         title: const Text('Event List'),
         actions: [
@@ -247,12 +243,22 @@ class EventCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Handle null or empty imagePath
-          if (imagePath.isNotEmpty)
+          if (imagePath != null && imagePath.trim().isNotEmpty)
             Image.network(
               imagePath,
               fit: BoxFit.cover,
               height: 200, // Set the desired height
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  // Display a loading indicator while the image is loading
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
             ),
           ListTile(
             title: Text(title),
