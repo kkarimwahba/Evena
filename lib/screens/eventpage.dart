@@ -1,5 +1,6 @@
+import 'package:evena/screens/Mappage.dart';
 import 'package:evena/screens/SeatReservation.dart';
-import 'package:evena/screens/Booking.dart'; // Import your Booking screen
+import 'package:evena/screens/Booking.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailsPage extends StatelessWidget {
@@ -60,63 +61,59 @@ class EventDetailsPage extends StatelessWidget {
               alignment: const AlignmentDirectional(0, 0),
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
-                child: ElevatedButton(
-                  onPressed: () {
-// <<<<<<< ticketDesign
-//                     Navigator.of(context).push(MaterialPageRoute(
-//                       builder: (context) {
-//                         return SeatReservation(
-//                           title: title,
-//                           description: description,
-//                           date: date,
-//                           time: time,
-//                           location: location,
-//                           category: category,
-//                           price: price,
-//                           imagePath: imagePath,
-//                           availability: availability,
-//                         );
-//                       },
-//                     ));
-// =======
-                    if (category.toLowerCase() == 'design') {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) {
-                          return SeatReservation(
-                            title: title,
-                            description: description,
-                            date: date,
-                            time: time,
-                            location: location,
-                            category: category,
-                            price: price,
-                            imagePath: imagePath,
-                            availability: availability,
-                          );
-                        },
-                      ));
-                    } else {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) {
-                          return Booking(
-                            selectedSeats: [],
-                            title: this.title,
-                            description: this.description,
-                            date: this.date,
-                            time: this.time,
-                            location: this.location,
-                            category: this.category,
-                            price: this.price,
-                            imagePath: this.imagePath,
-                            availability: this.availability,
-                          ); // Example, replace with actual data
-                        },
-                      ));
-                    }
-                  },
-                  child: const Text(
-                    'Reservation',
-                  ),
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (category.toLowerCase() == 'design') {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) {
+                              return SeatReservation(
+                                title: title,
+                                description: description,
+                                date: date,
+                                time: time,
+                                location: location,
+                                category: category,
+                                price: price,
+                                imagePath: imagePath,
+                                availability: availability,
+                              );
+                            },
+                          ));
+                        } else {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) {
+                              return Booking(
+                                selectedSeats: [],
+                                title: this.title,
+                                description: this.description,
+                                date: this.date,
+                                time: this.time,
+                                location: this.location,
+                                category: this.category,
+                                price: this.price,
+                                imagePath: this.imagePath,
+                                availability: this.availability,
+                              );
+                            },
+                          ));
+                        }
+                      },
+                      child: const Text('Reservation'),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) {
+                            return Mappage();
+                          },
+                        ));
+                      },
+                      child: const Text('View Map'),
+                    ),
+                  ],
                 ),
               ),
             ),

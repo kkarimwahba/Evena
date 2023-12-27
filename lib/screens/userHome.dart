@@ -12,6 +12,7 @@ class Event {
   final String category;
   final String price;
   final String availability;
+  final String imagePath;
 
   Event({
     required this.title,
@@ -22,6 +23,7 @@ class Event {
     required this.category,
     required this.price,
     required this.availability,
+    required this.imagePath,
   });
 }
 
@@ -34,6 +36,8 @@ class UserHome extends StatefulWidget {
 
 class _UserHomeState extends State<UserHome> {
   final TextEditingController _searchController = TextEditingController();
+  bool _showFilter = false;
+  String _selectedFilter = 'title';
 
   List<Event> allEvents = [];
   List<Event> filteredEvents = [];
@@ -45,28 +49,70 @@ class _UserHomeState extends State<UserHome> {
   }
 
   void fetchEvents() async {
-    final snapshot =
-        await FirebaseFirestore.instance.collection('events').get();
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('events').get();
 
+      setState(() {
+        allEvents = snapshot.docs.map((doc) {
+          var event = doc.data() as Map<String, dynamic>;
+          return Event(
+            title: event['title'] ?? '',
+            description: event['description'] ?? '',
+            date: DateTime.parse(event['date'] ?? ''),
+            time: event['time'] ?? '',
+            location: event['location'] ?? '',
+            category: event['category'] ?? '',
+            price: event['price']?.toString() ?? '',
+            availability: event['availability']?.toString() ?? '',
+            imagePath: event['image'] ?? '', // Handle null or empty imagePath
+          );
+        }).toList();
+
+        // Initialize the filteredEvents list with all events initially
+        filteredEvents = List.from(allEvents);
+      });
+    } catch (error) {
+      print('Error fetching events: $error');
+    }
+  }
+
+  void applyFilters(String searchValue) {
+    print('Applying filters with: $searchValue');
     setState(() {
-      allEvents = snapshot.docs.map((doc) {
-        var event = doc.data() as Map<String, dynamic>;
-        return Event(
-          title: event['title'] ?? '',
-          description: event['description'] ?? '',
-          date: DateTime.parse(event['date'] ?? ''),
-          time: event['time'] ?? '',
-          location: event['location'] ?? '',
-          category: event['category'] ?? '',
-          price: event['price']?.toString() ?? '',
-          availability: event['availability']?.toString() ?? '',
-          // Add image field if stored in Firestore
-        );
+      filteredEvents = allEvents.where((event) {
+        final filterValue = _getFilterValue(event);
+        final containsValue = filterValue
+            .toLowerCase()
+            .contains(searchValue.trim().toLowerCase());
+        return containsValue;
       }).toList();
-
-      // Initialize the filteredEvents list with all events initially
-      filteredEvents = List.from(allEvents);
     });
+  }
+
+  String _getFilterValue(Event event) {
+    switch (_selectedFilter) {
+      case 'location':
+        return event.location;
+      case 'date':
+        return event.date.toLocal().toString();
+      case 'category':
+        return event.category;
+      case 'title':
+      default:
+        return event.title;
+    }
+  }
+
+  void toggleFilter() {
+    setState(() {
+      _showFilter = !_showFilter;
+    });
+
+    if (_showFilter) {
+      // Apply filters when the filter icon is tapped
+      applyFilters(_searchController.text);
+    }
   }
 
   @override
@@ -78,124 +124,96 @@ class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-// <<<<<<< ticketDesign
-//         drawer: DrawerWidget(
-//           title: 'Event Page',
-//         ),
-//         appBar: AppBar(
-//           title: const Text('Event List'),
-//         ),
-//         body: Column(
-//           children: [
-//             SizedBox(
-//               width: 1 * MediaQuery.of(context).size.width,
-//               child: TextField(
-//                 controller: searchController,
-//                 onChanged: (value) {
-//                   // Update the filteredEvents list when the user types in the search bar
-//                   setState(() {
-//                     filteredEvents = allEvents
-//                         .where((event) =>
-//                             event.title
-//                                 .toLowerCase()
-//                                 .contains(value.toLowerCase()) ||
-//                             event.category
-//                                 .toLowerCase()
-//                                 .contains(value.toLowerCase()) ||
-//                             event.time
-//                                 .toLowerCase()
-//                                 .contains(value.toLowerCase()))
-//                         .toList();
-//                   });
-//                 },
-//                 decoration: InputDecoration(
-//                   hintText: "Search",
-//                   prefixIcon: const Icon(Icons.search),
-//                   border: OutlineInputBorder(
-//                     borderRadius: BorderRadius.circular(10),
-//                   ),
-// =======
-        drawer: DrawerWidget(
-          title: 'Event Page',
-        ),
-        appBar: AppBar(
-          title: const Text('Event List'),
-        ),
-        body: Column(
-          children: [
-            SizedBox(
-              width: 0.9 * MediaQuery.of(context).size.width,
-              child: TextField(
-                controller: _searchController,
-                onChanged: (value) {
-                  // Update the filteredEvents list when the user types in the search bar
-                  setState(() {
-                    filteredEvents = allEvents
-                        .where((event) =>
-                            event.title
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            event.category
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            event.time
-                                .toLowerCase()
-                                .contains(value.toLowerCase()))
-                        .toList();
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: "Search",
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+      drawer: DrawerWidget(
+        title: 'Event Page',
+      ),
+      appBar: AppBar(
+        title: const Text('Event List'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: toggleFilter,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      // Apply filters when search bar changes
+                      applyFilters(value);
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Search",
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
                 ),
               ),
+              if (_showFilter)
+                DropdownButton<String>(
+                  value: _selectedFilter,
+                  items: [
+                    DropdownMenuItem(
+                      value: 'title',
+                      child: Text('Title'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'location',
+                      child: Text('Location'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'date',
+                      child: Text('Date'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'category',
+                      child: Text('Category'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFilter = value!;
+                    });
+
+                    // Apply filters when the filter type changes
+                    applyFilters(_searchController.text);
+                  },
+                ),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredEvents.length,
+              itemBuilder: (context, index) {
+                var event = filteredEvents[index];
+
+                return EventCard(
+                  imagePath: event.imagePath,
+                  title: event.title,
+                  description: event.description,
+                  date: event.date,
+                  time: event.time,
+                  location: event.location,
+                  category: event.category,
+                  price: event.price,
+                  availability: event.availability,
+                );
+              },
             ),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection('events').snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Text('No events available.'),
-                    );
-                  }
-
-                  return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      var event = snapshot.data!.docs[index].data()
-                          as Map<String, dynamic>;
-
-                      return EventCard(
-                        imagePath: event['image'] ?? '',
-                        title: event['title'] ?? '',
-                        description: event['description'] ?? '',
-                        date: DateTime.parse(event['date'] ?? ''),
-                        time: event['time'] ?? '',
-                        location: event['location'] ?? '',
-                        category: event['category'] ?? '',
-                        price: event['price']?.toString() ?? '',
-                        availability: event['availability']?.toString() ?? '',
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -229,11 +247,13 @@ class EventCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Image.network(
-            imagePath,
-            fit: BoxFit.cover,
-            height: 200, // Set the desired height
-          ),
+          // Handle null or empty imagePath
+          if (imagePath.isNotEmpty)
+            Image.network(
+              imagePath,
+              fit: BoxFit.cover,
+              height: 200, // Set the desired height
+            ),
           ListTile(
             title: Text(title),
             subtitle: Text('Date: ${date.toLocal()}'),

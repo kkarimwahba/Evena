@@ -1,44 +1,62 @@
-/*import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:flutter/material.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 
-class MapPage extends StatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
+class Mappage extends StatefulWidget {
+  const Mappage({Key? key}) : super(key: key);
 
   @override
-  _MapPageState createState() => _MapPageState();
+  _MappageState createState() => _MappageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MappageState extends State<Mappage> {
+  List<LatLong> pickedLocations = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Map Page'),
-        backgroundColor: Colors.red,
+        title: const Text('Map Page'),
       ),
-      body: FlutterMap(
-        options: MapOptions(
-          center: LatLng(30.033, 31.233), // Cairo's coordinates
-          zoom: 13.0,
-        ),
-        layers: [
-          TileLayerOptions(
-            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
+      body: Column(
+        children: [
+          Expanded(
+            child: OpenStreetMapSearchAndPick(
+              center: pickedLocations.isEmpty
+                  ? LatLong(30.0626, 31.2195) // Al Manara coordinates
+                  : pickedLocations.last,
+              buttonColor: Colors.blue,
+              buttonText: 'Add Location',
+              onPicked: (pickedData) {
+                setState(() {
+                  pickedLocations.add(pickedData.latLong);
+                });
+              },
+            ),
           ),
-          MarkerLayerOptions(
-            markers: [
-              Marker(
-                width: 80.0,
-                height: 80.0,
-                point: LatLng(30.033, 31.233), // Marker at Cairo's coordinates
-                builder: (ctx) => FlutterLogo(),
-              ),
-            ],
+          Expanded(
+            child: ListView.builder(
+              itemCount: pickedLocations.length,
+              itemBuilder: (context, index) {
+                final location = pickedLocations[index];
+                return ListTile(
+                  title: Text('Location $index'),
+                  subtitle: Text(
+                      'Lat: ${location.latitude}, Lng: ${location.longitude}'),
+                );
+              },
+            ),
           ),
         ],
-      ),
-    );
-  }
-}*/
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Handle the list of picked locations
+          for (var location in pickedLocations) {
+            print('Picked Location: $location');
+          }
+        },
+        child: Icon(Icons.check),
+      ),
+    );
+  }
+}

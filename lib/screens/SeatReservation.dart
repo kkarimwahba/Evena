@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:evena/models/events.dart';
 import 'package:evena/screens/Booking.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SeatReservation extends StatefulWidget {
   final String title;
@@ -12,6 +13,7 @@ class SeatReservation extends StatefulWidget {
   final String price;
   final String imagePath;
   final String availability;
+
   const SeatReservation({
     Key? key,
     required this.title,
@@ -34,31 +36,35 @@ class _SeatReservationState extends State<SeatReservation> {
   final int rows = 11;
   late List<SeatStatus> seatStatusList;
   bool seatsReserved = false;
-  List<int> selectedSeats = []; // Declare selectedSeats as a class variable
+  List<int> selectedSeats = [];
 
   @override
   void initState() {
     super.initState();
-    seatStatusList =
-        List.generate(columns * rows, (index) => SeatStatus.available);
     fetchReservedSeats();
   }
 
   Future<void> fetchReservedSeats() async {
     try {
-      // Fetch reserved seats from Firestore
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('seats').get();
+      // Fetch reserved seats from Firestore based on the event title
+      DocumentSnapshot seatDocument = await FirebaseFirestore.instance
+          .collection('seats')
+          .doc(widget.title) // Use event title as the document ID
+          .get();
+
+      // Initialize seatStatusList based on available seats
+      seatStatusList =
+          List.generate(columns * rows, (index) => SeatStatus.available);
 
       // Update seatStatusList based on reserved seats
-      querySnapshot.docs.forEach((doc) {
-        List<int> reservedSeats = List<int>.from(doc['seats']);
+      if (seatDocument.exists) {
+        List<int> reservedSeats = List<int>.from(seatDocument['seats']);
         reservedSeats.forEach((seatNumber) {
           setState(() {
             seatStatusList[seatNumber - 1] = SeatStatus.reserved;
           });
         });
-      });
+      }
 
       // Update the UI to reflect the reserved seats
       setState(() {
@@ -67,6 +73,44 @@ class _SeatReservationState extends State<SeatReservation> {
     } catch (e) {
       print("Error fetching reserved seats: $e");
     }
+  }
+
+  Future<void> reserveSeats(List<int> selectedSeats) async {
+    try {
+      // Add or update reservation to Firestore based on the event title
+      await FirebaseFirestore.instance
+          .collection('seats')
+          .doc(widget.title) // Use event title as the document ID
+          .set({
+        'seats': selectedSeats,
+      }, SetOptions(merge: true));
+
+      // Optionally, you can perform additional actions after reservation
+    } catch (e) {
+      print("Error reserving seats: $e");
+    }
+  }
+
+  void checkReservationStatus() {
+    // You can customize this logic based on your requirements
+    setState(() {
+      seatsReserved = seatStatusList.contains(SeatStatus.reserved);
+    });
+  }
+
+  Color getSeatColor(SeatStatus status) {
+    switch (status) {
+      case SeatStatus.available:
+        return Colors.green;
+      case SeatStatus.selected:
+        return Colors.orange;
+      case SeatStatus.reserved:
+        return Colors.red;
+    }
+  }
+
+  Color getTextColor(SeatStatus status) {
+    return status == SeatStatus.available ? Colors.white : Colors.black;
   }
 
   @override
@@ -80,7 +124,7 @@ class _SeatReservationState extends State<SeatReservation> {
         child: Column(
           children: [
             Text(
-              "the stage",
+              "The Stage",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
@@ -161,41 +205,6 @@ class _SeatReservationState extends State<SeatReservation> {
         ),
       ),
     );
-  }
-
-  Future<void> reserveSeats(List<int> selectedSeats) async {
-    try {
-      // Add reservation to Firestore
-      await FirebaseFirestore.instance.collection('seats').add({
-        'seats': selectedSeats,
-      });
-
-      // Optionally, you can perform additional actions after reservation
-    } catch (e) {
-      print("Error reserving seats: $e");
-    }
-  }
-
-  void checkReservationStatus() {
-    // You can customize this logic based on your requirements
-    setState(() {
-      seatsReserved = seatStatusList.contains(SeatStatus.reserved);
-    });
-  }
-
-  Color getSeatColor(SeatStatus status) {
-    switch (status) {
-      case SeatStatus.available:
-        return Colors.green;
-      case SeatStatus.selected:
-        return Colors.orange;
-      case SeatStatus.reserved:
-        return Colors.red;
-    }
-  }
-
-  Color getTextColor(SeatStatus status) {
-    return status == SeatStatus.available ? Colors.white : Colors.black;
   }
 }
 
