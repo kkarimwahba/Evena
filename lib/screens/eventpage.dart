@@ -103,16 +103,16 @@ class EventDetailsPage extends StatelessWidget {
                       child: const Text('Reservation'),
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) {
-                            return Mappage();
-                          },
-                        ));
-                      },
-                      child: const Text('View Map'),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     Navigator.of(context).push(MaterialPageRoute(
+                    //       builder: (context) {
+                    //         return Mappage();
+                    //       },
+                    //     ));
+                    //   },
+                    //   child: const Text('View Map'),
+                    // ),
                   ],
                 ),
               ),
