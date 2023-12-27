@@ -12,17 +12,18 @@ class Event {
   final String category;
   final String price;
   final String availability;
+  final String imagePath;
 
-  Event({
-    required this.title,
-    required this.description,
-    required this.date,
-    required this.time,
-    required this.location,
-    required this.category,
-    required this.price,
-    required this.availability,
-  });
+  Event(
+      {required this.title,
+      required this.description,
+      required this.date,
+      required this.time,
+      required this.location,
+      required this.category,
+      required this.price,
+      required this.availability,
+      required this.imagePath});
 }
 
 class UserHome extends StatefulWidget {
@@ -60,6 +61,8 @@ class _UserHomeState extends State<UserHome> {
           category: event['category'] ?? '',
           price: event['price']?.toString() ?? '',
           availability: event['availability']?.toString() ?? '',
+          imagePath: event['imagepath'] ?? '',
+
           // Add image field if stored in Firestore
         );
       }).toList();
@@ -140,12 +143,14 @@ class _UserHomeState extends State<UserHome> {
                                 .contains(value.toLowerCase()) ||
                             event.time
                                 .toLowerCase()
+                                .contains(value.toLowerCase()) ||
+                            (event.imagePath?.toLowerCase() ?? '')
                                 .contains(value.toLowerCase()))
                         .toList();
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: "Search",
+                  hintText: "Search by : Location, Time, Cost.",
                   prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -177,18 +182,26 @@ class _UserHomeState extends State<UserHome> {
                     itemBuilder: (context, index) {
                       var event = snapshot.data!.docs[index].data()
                           as Map<String, dynamic>;
+                      DateTime eventDate = DateTime.parse(event['date'] ?? '');
 
-                      return EventCard(
-                        imagePath: event['image'] ?? '',
-                        title: event['title'] ?? '',
-                        description: event['description'] ?? '',
-                        date: DateTime.parse(event['date'] ?? ''),
-                        time: event['time'] ?? '',
-                        location: event['location'] ?? '',
-                        category: event['category'] ?? '',
-                        price: event['price']?.toString() ?? '',
-                        availability: event['availability']?.toString() ?? '',
-                      );
+                      // Check if the event date is in the future
+                      if (eventDate.isAfter(DateTime.now())) {
+                        return EventCard(
+                          imagePath: event['image'] ?? '',
+                          title: event['title'] ?? '',
+                          description: event['description'] ?? '',
+                          date: eventDate,
+                          time: event['time'] ?? '',
+                          location: event['location'] ?? '',
+                          category: event['category'] ?? '',
+                          price: event['price']?.toString() ?? '',
+                          availability: event['availability']?.toString() ?? '',
+                        );
+                      } else {
+                        // Event date is in the past, so don't display it
+                        return SizedBox
+                            .shrink(); // Empty SizedBox to make it invisible
+                      }
                     },
                   );
                 },

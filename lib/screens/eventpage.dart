@@ -1,6 +1,9 @@
 import 'package:evena/screens/SeatReservation.dart';
 import 'package:evena/screens/Booking.dart'; // Import your Booking screen
+import 'package:evena/widgets/eventmap.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class EventDetailsPage extends StatelessWidget {
   final String title;
@@ -62,23 +65,6 @@ class EventDetailsPage extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
                 child: ElevatedButton(
                   onPressed: () {
-// <<<<<<< ticketDesign
-//                     Navigator.of(context).push(MaterialPageRoute(
-//                       builder: (context) {
-//                         return SeatReservation(
-//                           title: title,
-//                           description: description,
-//                           date: date,
-//                           time: time,
-//                           location: location,
-//                           category: category,
-//                           price: price,
-//                           imagePath: imagePath,
-//                           availability: availability,
-//                         );
-//                       },
-//                     ));
-// =======
                     if (category.toLowerCase() == 'design') {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) {
@@ -120,6 +106,17 @@ class EventDetailsPage extends StatelessWidget {
                 ),
               ),
             ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.of(context)
+            //         .push(MaterialPageRoute(builder: (context) {
+            //       return const Mappage();
+            //     }));
+            //   },
+            //   child: const Text(
+            //     'map',
+            //   ),
+            // )
           ],
         ),
       ),

@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/models/users.dart';
 import 'package:evena/screens/adminHome.dart';
@@ -10,14 +8,22 @@ import 'package:flutter/material.dart';
 
 final db = FirebaseFirestore.instance;
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
-
-
-signup(UserBase user)
-{
+signup(UserBase user) {
   db.collection('users').add(user.tojson());
 }
 
+Future<void> signOut() async {
+  try {
+    await _auth.signOut();
+    print("User signed out");
+    // Navigate to the login screen or any other screen after logout
+    // Example: Navigator.pushReplacementNamed(context, '/login');
+  } catch (e) {
+    print("Error signing out: $e");
+  }
+}
   
 //   void route() {
 //     User? user = FirebaseAuth.instance.currentUser;

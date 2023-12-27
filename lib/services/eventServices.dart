@@ -40,6 +40,26 @@ class EventService {
       print('Error adding event to Firestore: $e');
     }
   }
+  //   Future<void> removePastEvents() async {
+  //   try {
+  //     final currentDate = DateTime.now();
+  //     final QuerySnapshot<Map<String, dynamic>> eventsSnapshot =
+  //         await eventsCollection.get();
+
+  //     for (QueryDocumentSnapshot<Map<String, dynamic>> eventSnapshot
+  //         in eventsSnapshot.docs) {
+  //       final eventDate = (eventSnapshot.data() as Map<String, dynamic>)['date']
+  //           .toDate(); // Assuming you have a 'date' field in your event document
+
+  //       if (eventDate.isBefore(currentDate)) {
+  //         await eventsCollection.doc(eventSnapshot.id).delete();
+  //       }
+  //     }
+  //     print('Past events removed successfully!');
+  //   } catch (e) {
+  //     print('Error removing past events: $e');
+  //   }
+  // }
 }
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
