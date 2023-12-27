@@ -1,5 +1,6 @@
+import 'package:evena/screens/Mappage.dart';
 import 'package:evena/screens/SeatReservation.dart';
-import 'package:evena/screens/Booking.dart'; // Import your Booking screen
+import 'package:evena/screens/Booking.dart';
 import 'package:evena/widgets/eventmap.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -103,6 +104,50 @@ class EventDetailsPage extends StatelessWidget {
                   child: const Text(
                     'Reservation',
                   ),
+// =======
+//                 child: Column(
+//                   children: [
+//                     ElevatedButton(
+//                       onPressed: () {
+//                         if (category.toLowerCase() == 'design') {
+//                           Navigator.of(context).push(MaterialPageRoute(
+//                             builder: (context) {
+//                               return SeatReservation(
+//                                 title: title,
+//                                 description: description,
+//                                 date: date,
+//                                 time: time,
+//                                 location: location,
+//                                 category: category,
+//                                 price: price,
+//                                 imagePath: imagePath,
+//                                 availability: availability,
+//                               );
+//                             },
+//                           ));
+//                         } else {
+//                           Navigator.of(context).push(MaterialPageRoute(
+//                             builder: (context) {
+//                               return Booking(
+//                                 selectedSeats: [],
+//                                 title: this.title,
+//                                 description: this.description,
+//                                 date: this.date,
+//                                 time: this.time,
+//                                 location: this.location,
+//                                 category: this.category,
+//                                 price: this.price,
+//                                 imagePath: this.imagePath,
+//                                 availability: this.availability,
+//                               );
+//                             },
+//                           ));
+//                         }
+//                       },
+//                       child: const Text('Reservation'),
+//                     ),
+//                   ],
+// >>>>>>> d0ea4b7a8231499b2b12f9cb0851c7e004814473
                 ),
               ),
             ),
