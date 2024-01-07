@@ -173,7 +173,7 @@ class _LoginState extends State<Login> {
                             }
                             else{
                                ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
+                                const SnackBar(
                                   content: Text('Wrong email or password'),
                                   duration: Duration(seconds: 3), // Adjust the duration as needed
                                 ),

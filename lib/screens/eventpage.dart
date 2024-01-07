@@ -2,6 +2,7 @@ import 'package:evena/screens/Mappage.dart';
 import 'package:evena/screens/SeatReservation.dart';
 import 'package:evena/screens/Booking.dart';
 import 'package:flutter/material.dart';
+import 'package:evena/services/LocationService.dart';
 
 class EventDetailsPage extends StatelessWidget {
   final String title;
@@ -103,16 +104,12 @@ class EventDetailsPage extends StatelessWidget {
                       child: const Text('Reservation'),
                     ),
                     const SizedBox(height: 16),
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     Navigator.of(context).push(MaterialPageRoute(
-                    //       builder: (context) {
-                    //         return Mappage();
-                    //       },
-                    //     ));
-                    //   },
-                    //   child: const Text('View Map'),
-                    // ),
+                    ElevatedButton(
+                      onPressed: () {
+                           MapLoc.openMap(30.017223458801503, 31.386553285341094);
+                      },
+                      child: const Text('View Map'),
+                    ),
                   ],
                 ),
               ),
