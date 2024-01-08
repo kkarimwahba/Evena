@@ -60,76 +60,79 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            FutureBuilder(
-              future: fetchUserData(), // Use the future to fetch user data
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text(
-                      'Loading...'); // Show loading indicator while fetching data
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return Text(
-                    'Welcome, ${_nameController.text}.',
-                    style: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.bold),
-                  );
-                }
-              },
-            ),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: '${user?.email}'),
-              enabled: false, // Disable email editing
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _phoneController,
-              decoration: InputDecoration(labelText: 'Phone'),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Handle the update logic here
-                updateUserData();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FutureBuilder(
+                future: fetchUserData(), // Use the future to fetch user data
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Text(
+                        'Loading...'); // Show loading indicator while fetching data
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return Text(
+                      'Welcome, ${_nameController.text}.',
+                      style: const TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.bold),
+                    );
+                  }
+                },
               ),
-              child: const Text(
-                'Update',
-                style: TextStyle(color: Colors.black),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name'),
               ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Handle the delete logic here
-                deleteAccount();
-              },
-              style: ElevatedButton.styleFrom(primary: Colors.red),
-              child: const Text(
-                'Delete Account',
-                style: TextStyle(color: Colors.black),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: '${user?.email}'),
+                enabled: false, // Disable email editing
               ),
-            ),
-          ],
+              TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: 'Phone'),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle the update logic here
+                  updateUserData();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+                ),
+                child: const Text(
+                  'Update',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle the delete logic here
+                  deleteAccount();
+                },
+                style: ElevatedButton.styleFrom(primary: Colors.red),
+                child: const Text(
+                  'Delete Account',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -153,6 +156,7 @@ class _UserProfileState extends State<UserProfile> {
         const SnackBar(
           content: Text('User data updated successfully!'),
           duration: Duration(seconds: 2),
+          backgroundColor: Colors.green,
         ),
       );
     } catch (error) {
