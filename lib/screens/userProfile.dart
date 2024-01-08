@@ -1,5 +1,6 @@
 import 'package:evena/models/users.dart';
 import 'package:evena/screens/signup.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +17,8 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -64,6 +67,8 @@ class _UserProfileState extends State<UserProfile> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+        child:Form(
+          key: _formKey,
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
@@ -86,30 +91,53 @@ class _UserProfileState extends State<UserProfile> {
                   }
                 },
               ),
-              TextField(
+              TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(labelText: 'Name'),
+                validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter your name';
+                }
+                return null;
+              },
               ),
               const SizedBox(height: 16),
-              TextField(
+              TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(labelText: '${user?.email}'),
                 enabled: false, // Disable email editing
               ),
-              TextField(
+              TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(labelText: 'Password'),
+                validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter your password';
+                }
+                return null;
+              },
               ),
               const SizedBox(height: 16),
-              TextField(
+              TextFormField(
                 controller: _phoneController,
                 decoration: InputDecoration(labelText: 'Phone'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your phone number';
+                  } else if (value.length != 11) {
+                    return 'Phone number should be 11 digits';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   // Handle the update logic here
-                  updateUserData();
+
+                  if (_formKey.currentState!.validate()) {
+                   updateUserData();
+                }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 255, 170, 0),

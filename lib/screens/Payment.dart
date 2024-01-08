@@ -165,6 +165,8 @@ class _PaymentState extends State<Payment> {
                     TextPosition(offset: value.length),
                   ),
                 );
+                }
+                
               },
             ),
             const SizedBox(height: 20),
