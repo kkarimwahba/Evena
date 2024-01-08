@@ -212,4 +212,30 @@ class _BookingState extends State<Booking> {
       print("Error reserving seats: $e");
     }
   }
+
+  // Future<void> saveCardInformation() async {
+  //   // Get current user
+
+  //   if (user != null) {
+  //     try {
+  //       // Create a reference to the user's document in the 'cards' collection
+  //       DocumentReference cardRef = FirebaseFirestore.instance
+  //           .collection('users')
+  //           .doc(user.uid)
+  //           .collection('cards')
+  //           .doc();
+
+  //       // Save card information to Firestore
+  //       await cardRef.set({
+  //         'cardNumber': cardNumberController.text,
+  //         'expiryDate': expiryDateController.text,
+  //         'cardHolderName': cardHolderNameController.text,
+  //         'cvvCode': cvvCodeController.text,
+  //       });
+  //     } catch (e) {
+  //       print("Error saving card information: $e");
+  //     }
+  //   }
+  // }
+
 }
