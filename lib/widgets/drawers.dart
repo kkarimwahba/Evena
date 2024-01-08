@@ -1,4 +1,3 @@
-import 'package:evena/models/users.dart';
 import 'package:evena/screens/login.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:evena/screens/userProfile.dart';

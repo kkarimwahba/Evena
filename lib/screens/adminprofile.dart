@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:evena/models/users.dart';
 import 'package:evena/screens/adminEventUpdate.dart';
 import 'package:evena/screens/login.dart';
 import 'package:evena/screens/userProfile.dart';

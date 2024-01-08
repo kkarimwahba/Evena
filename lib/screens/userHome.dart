@@ -272,69 +272,101 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (imagePath != null && imagePath.trim().isNotEmpty)
-            Image.network(
-              imagePath,
-              fit: BoxFit.cover,
-              height: 200, // Set the desired height
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
-                  // Display a loading indicator while the image is loading
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsPage(
+              title: title,
+              description: description,
+              date: date,
+              time: time,
+              location: location,
+              category: category,
+              price: price,
+              imagePath: imagePath,
+              availability: availability,
             ),
-          ListTile(
-            title: Text(title),
-            subtitle: Text('Date: ${date.toLocal()}'),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(description),
-          ),
-          ListTile(
-            title: Text('Time: $time'),
-            subtitle: Text('Location: $location'),
-          ),
-          ListTile(
-            title: Text('Category: $category'),
-            subtitle: Text('Price: $price EGP'),
-          ),
-          ListTile(
-            title: Text('Availability: $availability'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EventDetailsPage(
-                    title: title,
-                    description: description,
-                    date: date,
-                    time: time,
-                    location: location,
-                    category: category,
-                    price: price,
-                    imagePath: imagePath,
-                    availability: availability,
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (imagePath != null && imagePath.trim().isNotEmpty)
+              Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+                height: 200, // Set the desired height
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    // Display a loading indicator while the image is loading
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ListTile(
+              title: Text(title),
+              subtitle: Text('Date: ${date.toLocal()}'),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(description),
+            ),
+            ListTile(
+              title: Text('Time: $time'),
+              subtitle: Text('Location: $location'),
+            ),
+            ListTile(
+              title: Text('Category: $category'),
+              subtitle: Text('Price: $price EGP'),
+            ),
+            ListTile(
+              title: Text('Availability: $availability'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventDetailsPage(
+                      title: title,
+                      description: description,
+                      date: date,
+                      time: time,
+                      location: location,
+                      category: category,
+                      price: price,
+                      imagePath: imagePath,
+                      availability: availability,
+                    ),
+                  ),
+                );
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Book Now!',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
                   ),
                 ),
-              );
-            },
-            child: const Text('Book Now!'),
-          ),
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

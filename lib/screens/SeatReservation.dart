@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:evena/models/events.dart';
 import 'package:evena/screens/Booking.dart';
 import 'package:flutter/material.dart';
 
