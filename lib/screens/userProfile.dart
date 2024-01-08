@@ -63,12 +63,14 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child:Form(
           key: _formKey,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -132,12 +134,10 @@ class _UserProfileState extends State<UserProfile> {
               ElevatedButton(
                 onPressed: () {
                   // Handle the update logic here
+
                   if (_formKey.currentState!.validate()) {
                    updateUserData();
                 }
-                
-                
-                 
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 255, 170, 0),
@@ -184,6 +184,7 @@ class _UserProfileState extends State<UserProfile> {
         const SnackBar(
           content: Text('User data updated successfully!'),
           duration: Duration(seconds: 2),
+          backgroundColor: Colors.green,
         ),
       );
     } catch (error) {

@@ -1,11 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/adminHome.dart';
-import 'package:evena/screens/category.dart';
 import 'package:evena/screens/signup.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:evena/services/firebase_auth.dart';
-import 'package:evena/services/userServices.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -141,54 +138,67 @@ class _LoginState extends State<Login> {
                             },
                           ),
                         ),
-                        SizedBox(height: 50),
-                        SizedBox(
-                          width: 0.8 * MediaQuery.of(context).size.width,
-                          height: 0.13 * MediaQuery.of(context).size.width,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                User? user = await signinwithemailandpassword(
-                                    emailController.text.trim(),
-                                    passwordController.text.trim());
+                      ),
+                      const SizedBox(height: 50),
+                      SizedBox(
+                        width: 0.8 * MediaQuery.of(context).size.width,
+                        height: 0.13 * MediaQuery.of(context).size.width,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            User? user = await signinwithemailandpassword(
+                                emailController.text.trim(),
+                                passwordController.text.trim());
 
-                                QuerySnapshot<Map<String, dynamic>>
-                                    querySnapshot =
-                                    await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .where('uid', isEqualTo: user!.uid)
-                                        .limit(1)
-                                        .get();
+                            QuerySnapshot<Map<String, dynamic>> querySnapshot =
+                                await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .where('uid', isEqualTo: user!.uid)
+                                    .limit(1)
+                                    .get();
 
-                                if (querySnapshot.docs.isNotEmpty) {
-                                  String role =
-                                      querySnapshot.docs.first.get('role') ??
-                                          '';
+                            if (querySnapshot.docs.isNotEmpty) {
+                              String role =
+                                  querySnapshot.docs.first.get('role') ??
+                                      ''; // Get user role
 
-                                  if (role == 'user') {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => UserHome(),
-                                      ),
-                                    );
-                                  } else if (role == 'admin') {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => Admin(),
-                                      ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Wrong email or password'),
-                                        duration: Duration(seconds: 3),
-                                      ),
-                                    );
-                                  }
-                                }
+                              if (role == 'user') {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => UserHome(),
+                                ));
+                              } else if (role == 'admin') {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => Admin(),
+                                ));
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Wrong email or password'),
+                                    duration: Duration(
+                                        seconds:
+                                            3), // Adjust the duration as needed
+                                  ),
+                                );
                               }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 170, 0),
+                          ),
+                          child: const Text(
+                            'Login',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                fontSize: 25),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (c) {
+                              return Signup();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:

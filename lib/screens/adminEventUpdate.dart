@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/eventpage.dart';
-import 'package:evena/widgets/drawers.dart';
 import 'package:flutter/material.dart';
 
 class Event {

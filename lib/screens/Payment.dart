@@ -45,116 +45,160 @@ class _PaymentState extends State<Payment> {
   TextEditingController cvvCodeController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final int maxCardNumberDigits = 16;
+  final int maxccvNumber = 3;
 
   @override
   Widget build(BuildContext context) {
     var creditCardForm = Form(
       key: _formKey,
-      child: Column(
-        children: <Widget>[
-          CreditCardWidget(
-            width: 700,
-            height: 300,
-            cardNumber: cardNumberController.text,
-            expiryDate: expiryDateController.text,
-            cardHolderName: cardHolderNameController.text,
-            cvvCode: cvvCodeController.text,
-            showBackView: false,
-            onCreditCardWidgetChange: (CreditCardBrand) {},
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Card Number',
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: <Widget>[
+            CreditCardWidget(
+              width: 700,
+              height: 300,
+              cardNumber: cardNumberController.text,
+              expiryDate: expiryDateController.text,
+              cardHolderName: cardHolderNameController.text,
+              cvvCode: cvvCodeController.text,
+              showBackView: false,
+              onCreditCardWidgetChange: (CreditCardBrand) {},
             ),
-            keyboardType: TextInputType.number,
-            controller: cardNumberController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a valid card number';
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Expiry Date',
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Card Number',
+              ),
+              keyboardType: TextInputType.number,
+              controller: cardNumberController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a valid card number';
+                }
+                if (value.length != maxCardNumberDigits) {
+                  return 'Card number must have $maxCardNumberDigits digits';
+                }
+                return null;
+              },
+              onChanged: (value) {
+                value = value.replaceAll(RegExp(r'\D'), '');
+                if (value.length > maxCardNumberDigits) {
+                  value = value.substring(0, maxCardNumberDigits);
+                }
+                // if (value.length > 4) {
+                //   value = value.splitMapJoin(
+                //     RegExp(r".{4}"),
+                //     onMatch: (match) => "${match.group(0)}",
+                //     onNonMatch: (nonMatch) => nonMatch,
+                //   );
+                // }
+                cardNumberController.value = TextEditingValue(
+                  text: value,
+                  selection: TextSelection.fromPosition(
+                    TextPosition(offset: value.length),
+                  ),
+                );
+              },
             ),
-            keyboardType: TextInputType.number,
-            controller: expiryDateController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a valid expiry date';
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Card Holder Name',
-            ),
-            controller: cardHolderNameController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter the card holder\'s name';
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'CVV Code',
-            ),
-            keyboardType: TextInputType.number,
-            controller: cvvCodeController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a valid CVV code';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: 200,
-            height: 60,
-            child: ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  // Perform payment confirmation logic here
-                  showAlertDialog(context);
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Expiry Date',
+              ),
+              keyboardType: TextInputType.number,
+              controller: expiryDateController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a valid expiry date';
+                }
+                final RegExp regExp = RegExp(r'^\d{2}/\d{2}$');
+                if (!regExp.hasMatch(value)) {
+                  return 'Invalid date format (MM/YY)';
+                }
 
-                  // Save card information to Firebase after confirming payment
-                  saveCardInformation();
-
-                  Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TicketCard(
-                      title: widget.title,
-                      description: widget.description,
-                      date: widget.date,
-                      time: widget.time,
-                      location: widget.location,
-                      category: widget.category,
-                      price: widget.price,
-                      imagePath: widget.imagePath,
-                      availability: widget.availability,
-                    ),
+                return null;
+              },
+              onChanged: (value) {
+                if (value.length == 2 && !value.contains('/')) {
+                  expiryDateController.text = '$value/';
+                  expiryDateController.selection = TextSelection.fromPosition(
+                    TextPosition(offset: expiryDateController.text.length),
+                  );
+                }
+              },
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Card Holder Name',
+              ),
+              controller: cardHolderNameController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the card holder\'s name';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'CVV Code',
+              ),
+              keyboardType: TextInputType.number,
+              controller: cvvCodeController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a valid CVV code';
+                }
+                if (value.length != maxccvNumber) {
+                  return 'Card number must have $maxccvNumber digits';
+                }
+                return null;
+              },
+              onChanged: (value) {
+                value = value.replaceAll(RegExp(r'\D'), '');
+                if (value.length > maxccvNumber) {
+                  value = value.substring(0, maxccvNumber);
+                }
+                cvvCodeController.value = TextEditingValue(
+                  text: value,
+                  selection: TextSelection.fromPosition(
+                    TextPosition(offset: value.length),
                   ),
                 );
                 }
                 
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 255, 170, 0),
-              ),
-              child: const Text(
-                'Confirm Payment',
-                style: TextStyle(fontSize: 18, color: Colors.black),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: 200,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    saveCardInformation();
+                    showAlertDialog(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please fill in all required fields.'),
+                        duration: Duration(seconds: 2),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+                ),
+                child: const Text(
+                  'Confirm Payment',
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
 
@@ -171,15 +215,26 @@ class _PaymentState extends State<Payment> {
     );
   }
 
-  void showAlertDialog(BuildContext context) async {
+  showAlertDialog(BuildContext context) async {
     Widget okButton = ElevatedButton(
       child: const Text("Ok"),
       onPressed: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (c) {
-            return const UserHome();
-          },
-        ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TicketCard(
+              title: widget.title,
+              description: widget.description,
+              date: widget.date,
+              time: widget.time,
+              location: widget.location,
+              category: widget.category,
+              price: widget.price,
+              imagePath: widget.imagePath,
+              availability: widget.availability,
+            ),
+          ),
+        );
       },
     );
 
