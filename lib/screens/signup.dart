@@ -225,28 +225,18 @@ class _SignupState extends State<Signup> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        SizedBox(
-                          width: 0.8 * MediaQuery.of(context).size.width,
-                          height: 0.13 * MediaQuery.of(context).size.width,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              User? user1 = await registerWithEmailAndPassword(
-                                  emailController.text.trim(),
-                                  passwordController.text.trim(),
-                                  usernamecontroller.text.trim(),
-                                  phonenumbercontroller.text.trim());
-
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (c) {
-                                  return Login();
-                                },
-                              ));
-                            },
-                            child: const Text(
-                              'If you have already account? Log in here!',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 12),
-                            ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (c) {
+                                return Login();
+                              },
+                            ));
+                          },
+                          child: const Text(
+                            'If you dont have an account? Log in here!',
+                            style:
+                                TextStyle(fontSize: 12.25, color: Colors.black),
                           ),
                         ),
                         const SizedBox(

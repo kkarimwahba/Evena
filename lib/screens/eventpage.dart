@@ -43,7 +43,6 @@ class EventDetailsPage extends StatelessWidget {
                 child: Text(
                   title,
                   style: const TextStyle(
-                      color: Colors.black,
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
@@ -57,10 +56,7 @@ class EventDetailsPage extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   description,
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(0.7),
-                      fontSize: 17,
-                      height: 1),
+                  style: TextStyle(fontSize: 17, height: 1),
                 ),
               ),
               subtitle: Padding(
@@ -157,7 +153,7 @@ class EventDetailsPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                           MapLoc.openMap(30.017223458801503, 31.386553285341094);
+                        MapLoc.openMap(30.017223458801503, 31.386553285341094);
                       },
                       child: const Text('View Map'),
                     ),
