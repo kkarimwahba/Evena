@@ -81,7 +81,7 @@ class Events extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _controller = ScrollController();
+    // final _controller = ScrollController();
 
     return Scaffold(
       appBar: AppBar(

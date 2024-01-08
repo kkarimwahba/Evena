@@ -1,6 +1,4 @@
-import 'package:evena/models/users.dart';
 import 'package:evena/services/firebase_auth.dart';
-import 'package:evena/services/userServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:evena/screens/login.dart';
@@ -197,10 +195,11 @@ class _SignupState extends State<Signup> {
                         height: 0.13 * MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                           onPressed: () async {
-
-                           
-                            User? user1=await registerWithEmailAndPassword(emailController.text.trim(), passwordController.text.trim(),usernamecontroller.text.trim(),phonenumbercontroller.text.trim());
-                          
+                            User? user1 = await registerWithEmailAndPassword(
+                                emailController.text.trim(),
+                                passwordController.text.trim(),
+                                usernamecontroller.text.trim(),
+                                phonenumbercontroller.text.trim());
 
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) {
