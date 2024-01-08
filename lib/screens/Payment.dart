@@ -125,8 +125,8 @@ class _PaymentState extends State<Payment> {
 
                   // Save card information to Firebase after confirming payment
                   saveCardInformation();
-                }
-                Navigator.push(
+
+                  Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => TicketCard(
@@ -142,6 +142,8 @@ class _PaymentState extends State<Payment> {
                     ),
                   ),
                 );
+                }
+                
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 255, 170, 0),
