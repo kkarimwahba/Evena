@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/eventpage.dart';
+import 'package:evena/widgets/drawers.dart';
 import 'package:flutter/material.dart';
 
 class Event {
@@ -47,29 +48,52 @@ class _UserHomeState extends State<UserHome> {
     fetchEvents();
   }
 
+  bool loading = false;
+
   void fetchEvents() async {
     try {
+      // Set loading to true to indicate that events are being fetched
+      setState(() {
+        loading = true;
+      });
+
       final snapshot =
           await FirebaseFirestore.instance.collection('events').get();
 
+      DateTime currentDate = DateTime.now();
+
       setState(() {
-        allEvents = snapshot.docs.map((doc) {
+        // Initialize the lists with the correct type
+        allEvents = List<Event>.from(snapshot.docs.map((doc) {
           var event = doc.data() as Map<String, dynamic>;
-          return Event(
-            title: event['title'] ?? '',
-            description: event['description'] ?? '',
-            date: DateTime.parse(event['date'] ?? ''),
-            time: event['time'] ?? '',
-            location: event['location'] ?? '',
-            category: event['category'] ?? '',
-            price: event['price']?.toString() ?? '',
-            availability: event['availability']?.toString() ?? '',
-            imagePath: event['image'] ?? '', // Handle null or empty imagePath
-          );
-        }).toList();
+
+          // Check if the event date is in the future
+          final isFutureEvent =
+              DateTime.parse(event['date'] ?? '').isAfter(currentDate);
+
+          // Include the event only if it has a future date
+          if (isFutureEvent) {
+            return Event(
+              title: event['title'] ?? '',
+              description: event['description'] ?? '',
+              date: DateTime.parse(event['date'] ?? ''),
+              time: event['time'] ?? '',
+              location: event['location'] ?? '',
+              category: event['category'] ?? '',
+              price: event['price']?.toString() ?? '',
+              availability: event['availability']?.toString() ?? '',
+              imagePath: event['image'] ?? '',
+            );
+          }
+
+          return null; // Exclude events with past dates
+        }).where((event) => event != null));
 
         // Initialize the filteredEvents list with all events initially
-        filteredEvents = List.from(allEvents);
+        filteredEvents = List<Event>.from(allEvents);
+
+        // Set loading back to false now that events are fetched
+        loading = false;
       });
     } catch (error) {
       print('Error fetching events: $error');
@@ -78,13 +102,20 @@ class _UserHomeState extends State<UserHome> {
 
   void applyFilters(String searchValue) {
     print('Applying filters with: $searchValue');
+    DateTime currentDate = DateTime.now();
+
     setState(() {
       filteredEvents = allEvents.where((event) {
         final filterValue = _getFilterValue(event);
         final containsValue = filterValue
             .toLowerCase()
             .contains(searchValue.trim().toLowerCase());
-        return containsValue;
+
+        // Check if the event date is in the future
+        final isFutureEvent = event.date.isAfter(currentDate);
+
+        // Return true only if the event matches the search criteria and is in the future
+        return containsValue && isFutureEvent;
       }).toList();
     });
   }
@@ -123,6 +154,9 @@ class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: DrawerWidget(
+        title: 'Event Page',
+      ),
       appBar: AppBar(
         title: const Text('Event List'),
         actions: [
@@ -238,69 +272,101 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (imagePath != null && imagePath.trim().isNotEmpty)
-            Image.network(
-              imagePath,
-              fit: BoxFit.cover,
-              height: 200, // Set the desired height
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
-                  // Display a loading indicator while the image is loading
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsPage(
+              title: title,
+              description: description,
+              date: date,
+              time: time,
+              location: location,
+              category: category,
+              price: price,
+              imagePath: imagePath,
+              availability: availability,
             ),
-          ListTile(
-            title: Text(title),
-            subtitle: Text('Date: ${date.toLocal()}'),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(description),
-          ),
-          ListTile(
-            title: Text('Time: $time'),
-            subtitle: Text('Location: $location'),
-          ),
-          ListTile(
-            title: Text('Category: $category'),
-            subtitle: Text('Price: $price EGP'),
-          ),
-          ListTile(
-            title: Text('Availability: $availability'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EventDetailsPage(
-                    title: title,
-                    description: description,
-                    date: date,
-                    time: time,
-                    location: location,
-                    category: category,
-                    price: price,
-                    imagePath: imagePath,
-                    availability: availability,
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (imagePath != null && imagePath.trim().isNotEmpty)
+              Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+                height: 200, // Set the desired height
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    // Display a loading indicator while the image is loading
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ListTile(
+              title: Text(title),
+              subtitle: Text('Date: ${date.toLocal()}'),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(description),
+            ),
+            ListTile(
+              title: Text('Time: $time'),
+              subtitle: Text('Location: $location'),
+            ),
+            ListTile(
+              title: Text('Category: $category'),
+              subtitle: Text('Price: $price EGP'),
+            ),
+            ListTile(
+              title: Text('Availability: $availability'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventDetailsPage(
+                      title: title,
+                      description: description,
+                      date: date,
+                      time: time,
+                      location: location,
+                      category: category,
+                      price: price,
+                      imagePath: imagePath,
+                      availability: availability,
+                    ),
+                  ),
+                );
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Book Now!',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
                   ),
                 ),
-              );
-            },
-            child: const Text('Book Now!'),
-          ),
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,7 +1,7 @@
-import 'package:evena/screens/Mappage.dart';
 import 'package:evena/screens/SeatReservation.dart';
 import 'package:evena/screens/Booking.dart';
 import 'package:flutter/material.dart';
+import 'package:evena/services/LocationService.dart';
 
 class EventDetailsPage extends StatelessWidget {
   final String title;
@@ -37,25 +37,65 @@ class EventDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Image.network(imagePath),
-            ListTile(
-              title: Text(title),
-              subtitle: Text('Date: ${date.toLocal()}'),
-            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(description),
+              child: Center(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                      fontStyle: FontStyle.italic),
+                ),
+              ),
             ),
+            Image.network(imagePath),
             ListTile(
-              title: Text('Time: $time'),
-              subtitle: Text('Location: $location'),
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  description,
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(0.7),
+                      fontSize: 17,
+                      height: 1),
+                ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text('Date: ${date.toLocal()}'),
+              ),
             ),
-            ListTile(
-              title: Text('Category: $category'),
-              subtitle: Text('Price: $price \$'),
+
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Text(description),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Text('Date: ${date.toLocal()}'),
+            // ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: ListTile(
+                title: Text('Time: $time'),
+                subtitle: Text('Location: $location'),
+              ),
             ),
-            ListTile(
-              title: Text('Availability: $availability'),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: ListTile(
+                title: Text('Category: $category'),
+                subtitle: Text('Price: $price EGP'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: ListTile(
+                title: Text('Availability: $availability'),
+              ),
             ),
             Align(
               alignment: const AlignmentDirectional(0, 0),
@@ -64,6 +104,9 @@ class EventDetailsPage extends StatelessWidget {
                 child: Column(
                   children: [
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+                      ),
                       onPressed: () {
                         if (category.toLowerCase() == 'design') {
                           Navigator.of(context).push(MaterialPageRoute(
@@ -100,16 +143,21 @@ class EventDetailsPage extends StatelessWidget {
                           ));
                         }
                       },
-                      child: const Text('Reservation'),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Reservation',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) {
-                            return Mappage();
-                          },
-                        ));
+                           MapLoc.openMap(30.017223458801503, 31.386553285341094);
                       },
                       child: const Text('View Map'),
                     ),

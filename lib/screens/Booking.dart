@@ -37,16 +37,27 @@ class _BookingState extends State<Booking> {
   String name = '';
   String phoneNumber = '';
   String email = '';
-
-  // Validation flags
   bool isNameValid = true;
   bool isPhoneNumberValid = true;
   bool isEmailValid = true;
 
-  TextEditingController cardNumberController = TextEditingController();
-  TextEditingController expiryDateController = TextEditingController();
-  TextEditingController cardHolderNameController = TextEditingController();
-  TextEditingController cvvCodeController = TextEditingController();
+  void showSuccessSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,107 +67,117 @@ class _BookingState extends State<Booking> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Name Text Field
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Name',
-                errorText: isNameValid ? null : 'Please enter a valid name',
-              ),
-              onChanged: (value) {
-                setState(() {
-                  name = value;
-                  isNameValid = value.isNotEmpty;
-                });
-              },
-            ),
-            const SizedBox(height: 16.0),
-
-            // Phone Number Text Field
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Phone Number',
-                errorText: isPhoneNumberValid
-                    ? null
-                    : 'Please enter a valid phone number (e.g., 123-456-7890)',
-              ),
-              keyboardType: TextInputType.phone,
-              onChanged: (value) {
-                setState(() {
-                  phoneNumber = value;
-                  isPhoneNumberValid = value.isNotEmpty;
-                });
-              },
-            ),
-            const SizedBox(height: 16.0),
-
-            // Email Text Field
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Email',
-                errorText:
-                    isEmailValid ? null : 'Please enter a valid email address',
-              ),
-              keyboardType: TextInputType.emailAddress,
-              onChanged: (value) {
-                setState(() {
-                  email = value;
-                  isEmailValid =
-                      RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                          .hasMatch(value);
-                });
-              },
-            ),
-            const SizedBox(height: 16.0),
-
-            // Display selected seats dynamically
-            const SizedBox(height: 16.0),
-            Text(
-              "Selected Seats: ${widget.selectedSeats.join(', ')}",
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16.0),
-            // ... (similar fields for expiry date, card holder name, and CVV)
-
-            const SizedBox(height: 20),
-            SizedBox(
-              width: 200,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: isFormValid()
-                    ? () async {
-                        // await storeUserData();
-                        await reserveSeats(widget.selectedSeats);
-                        // await saveCardInformation();
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (c) {
-                            return Payment(
-                              title: widget.title,
-                              description: widget.description,
-                              date: widget.date,
-                              time: widget.time,
-                              location: widget.location,
-                              category: widget.category,
-                              price: widget.price,
-                              imagePath: widget.imagePath,
-                              availability: widget.availability,
-                            );
-                          },
-                        ));
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  errorText: isNameValid ? null : 'Please enter a valid name',
                 ),
-                child: const Text(
-                  'Checkout',
-                  style: TextStyle(fontSize: 25, color: Colors.black),
+                onChanged: (value) {
+                  setState(() {
+                    name = value;
+                    isNameValid = value.isNotEmpty;
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  errorText: isPhoneNumberValid
+                      ? null
+                      : 'Please enter a valid phone number (e.g., 123-456-7890)',
+                ),
+                keyboardType: TextInputType.phone,
+                onChanged: (value) {
+                  setState(() {
+                    phoneNumber = value;
+                    isPhoneNumberValid = value.isNotEmpty;
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  errorText: isEmailValid
+                      ? null
+                      : 'Please enter a valid email address',
+                ),
+                keyboardType: TextInputType.emailAddress,
+                onChanged: (value) {
+                  setState(() {
+                    email = value;
+                    isEmailValid =
+                        RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                            .hasMatch(value);
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
+              Text(
+                "Selected Seats: ${widget.selectedSeats.join(', ')}",
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16.0),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 200,
+                height: 60,
+                child: ElevatedButton(
+                  onPressed: isFormValid()
+                      ? () async {
+                          // await storeUserData();
+                          await reserveSeats(widget.selectedSeats);
+                          // await saveCardInformation();
+                          if (name.isEmpty ||
+                              phoneNumber.isEmpty ||
+                              email.isEmpty) {
+                            showErrorSnackBar(
+                                context, 'Invalid Form or Card Details');
+                          } else {
+                            // Your existing code for button press
+                            // e.g., await storeUserData();
+                            // await reserveSeats(widget.selectedSeats);
+                            // await saveCardInformation();
+                            showSuccessSnackBar(context, 'Booking Successful');
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (c) {
+                                return Payment(
+                                  title: widget.title,
+                                  description: widget.description,
+                                  date: widget.date,
+                                  time: widget.time,
+                                  location: widget.location,
+                                  category: widget.category,
+                                  price: widget.price,
+                                  imagePath: widget.imagePath,
+                                  availability: widget.availability,
+                                );
+                              },
+                            ));
+                          }
+                        }
+                      : () {
+                          showErrorSnackBar(
+                              context, 'Invalid Form or Card Details');
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+                  ),
+                  child: const Text(
+                    'Checkout',
+                    style: TextStyle(fontSize: 25, color: Colors.black),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -165,16 +186,6 @@ class _BookingState extends State<Booking> {
   bool isFormValid() {
     return isNameValid && isPhoneNumberValid && isEmailValid;
   }
-
-  // Future<void> storeUserData() async {
-  //   try {
-  //     if (user != null) {
-  //       await FirebaseFirestore.instance.collection('users').add({});
-  //     }
-  //   } catch (e) {
-  //     print("Error storing user data: $e");
-  //   }
-  // }
 
   Future<void> reserveSeats(List<int> selectedSeats) async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -226,4 +237,5 @@ class _BookingState extends State<Booking> {
   //     }
   //   }
   // }
+
 }

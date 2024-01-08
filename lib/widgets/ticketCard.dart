@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:evena/screens/userHome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ticket_widget/ticket_widget.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class TicketCard extends StatefulWidget {
@@ -40,170 +42,205 @@ class _TicketCardState extends State<TicketCard> {
   Future<void> saveTicketToGallery() async {
     if (!mounted) return;
 
-    RenderRepaintBoundary boundary =
-        globalKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
+    try {
+      RenderRepaintBoundary boundary =
+          globalKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
 
-    if (boundary == null) {
-      // Handle the case where boundary is null
-      return;
-    }
+      final image = await boundary.toImage();
+      ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
 
-    final image = await boundary.toImage();
-    ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+      if (byteData == null) {
+        throw 'Error: Could not convert image to ByteData';
+      }
 
-    if (byteData != null) {
       Uint8List uint8List = byteData.buffer.asUint8List();
       await ImageGallerySaver.saveImage(uint8List);
+
+      // Show a success Snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ticket saved successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const UserHome(),
+        ),
+      );
+    } catch (e) {
+      // Show an error Snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error saving ticket: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print('Error saving ticket: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          backgroundColor: Colors.amberAccent[700],
-          body: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const Text(
-                    'Your Ticket',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-              const Text(
-                "Thank your for purchase! \nSave your ticket below",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TicketWidget(
-                width: 300,
-                height: 500,
-                isCornerRounded: true,
-                child: Stack(
+    return RepaintBoundary(
+      key: globalKey,
+      child: SafeArea(
+        child: Scaffold(
+            backgroundColor: Colors.amberAccent[700],
+            body: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Color.fromARGB(255, 220, 147, 0),
-                            radius: 60,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 55,
-                              backgroundImage:
-                                  AssetImage('assets/images/logo.png'),
-                            ),
-                          ),
-                          Text(
-                            widget.title,
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
-                                fontStyle: FontStyle.italic),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                color: Colors.grey,
-                                size: 18,
-                              ),
-                              Text(
-                                widget.location,
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 255, 170, 0),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  ticketDetails('Time', widget.time),
-                                  ticketDetails('Price', widget.price),
-                                ],
-                              ),
-                              // Row(
-                              //   mainAxisAlignment:
-                              //       MainAxisAlignment.spaceEvenly,
-                              //   children: [
-                              //     ticketDetails('Time', '8:30PM'),
-                              //     ticketDetails('Price', '500\$'),
-                              //   ],
-                              // ),
-                            ],
-                          ),
-                          Container(
-                            height: 100,
-                            width: 100,
-                            color: Colors.black,
-                            child: Image.asset('assets/images/qrcode.png'),
-                          )
-                        ],
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.black,
                       ),
-                    )
+                    ),
+                    const Text(
+                      'Your Ticket',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.menu,
+                        color: Colors.black,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              SizedBox(
-                height: 40,
-                width: 140,
-                child: ElevatedButton(
-                  onPressed: saveTicketToGallery,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                  ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 255, 200, 0), fontSize: 25),
+                const Text(
+                  "Thank your for purchase! \nSave your ticket below",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 10,
-              )
-            ],
-          )),
+                const SizedBox(
+                  height: 20,
+                ),
+                TicketWidget(
+                  width: 300,
+                  height: 500,
+                  isCornerRounded: true,
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const CircleAvatar(
+                              backgroundColor: Color.fromARGB(255, 220, 147, 0),
+                              radius: 60,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                radius: 55,
+                                backgroundImage:
+                                    AssetImage('assets/images/logo.png'),
+                              ),
+                            ),
+                            Text(
+                              widget.title,
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.location_on,
+                                  color: Colors.grey,
+                                  size: 18,
+                                ),
+                                Text(
+                                  widget.location,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 255, 170, 0),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ticketDetails('Time', widget.time),
+                                    ticketDetails('Price', widget.price),
+                                  ],
+                                ),
+                                // Row(
+                                //   mainAxisAlignment:
+                                //       MainAxisAlignment.spaceEvenly,
+                                //   children: [
+                                //     ticketDetails('Time', '8:30PM'),
+                                //     ticketDetails('Price', '500\$'),
+                                //   ],
+                                // ),
+                              ],
+                            ),
+                            Container(
+                                height: 100,
+                                width: 100,
+                                color: Colors.black,
+                                child: QrImageView(
+                                  data: widget.title,
+                                  version: QrVersions.auto,
+                                  size: 320,
+                                  gapless: false,
+                                  embeddedImage: const AssetImage(
+                                      'assets/images/qrcode.png'),
+                                  embeddedImageStyle:
+                                      const QrEmbeddedImageStyle(
+                                    size: Size(100, 100),
+                                  ),
+                                )),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 25,
+                ),
+                SizedBox(
+                  height: 40,
+                  width: 140,
+                  child: ElevatedButton(
+                    onPressed: saveTicketToGallery,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                    ),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 255, 200, 0),
+                          fontSize: 25),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                )
+              ],
+            )),
+      ),
     );
   }
 
