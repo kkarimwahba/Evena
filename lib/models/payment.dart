@@ -1,5 +1,4 @@
-class BookingModel {
-  final List<int> selectedSeats;
+class Paymentclass {
   final String title;
   final String description;
   final DateTime date;
@@ -10,8 +9,7 @@ class BookingModel {
   final String imagePath;
   final String availability;
 
-  BookingModel({
-    required this.selectedSeats,
+  Paymentclass({
     required this.title,
     required this.description,
     required this.date,

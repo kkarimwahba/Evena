@@ -3,11 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
-
-
-
 class Booking extends StatefulWidget {
   final List<int> selectedSeats;
   final String title;
@@ -184,17 +179,21 @@ class _BookingState extends State<Booking> {
   Future<void> reserveSeats(List<int> selectedSeats) async {
     User? user = FirebaseAuth.instance.currentUser;
     try {
-      
       if (user != null) {
-        QuerySnapshot<Map<String, dynamic>> userRef= await FirebaseFirestore.instance.collection('users').where('uid', isEqualTo: userUid).limit(1).get();
-        if (userRef.docs.isNotEmpty){
-        var firstDocument = userRef.docs.first;
-        var documentRefrence = firstDocument.reference;
-        await documentRefrence.collection('tickets').doc().set(
-          {'seats':selectedSeats}
-        );
-        }
-        else{
+        QuerySnapshot<Map<String, dynamic>> userRef = await FirebaseFirestore
+            .instance
+            .collection('users')
+            .where('uid', isEqualTo: userUid)
+            .limit(1)
+            .get();
+        if (userRef.docs.isNotEmpty) {
+          var firstDocument = userRef.docs.first;
+          var documentRefrence = firstDocument.reference;
+          await documentRefrence
+              .collection('tickets')
+              .doc()
+              .set({'seats': selectedSeats});
+        } else {
           print('error');
         }
       }
@@ -202,7 +201,6 @@ class _BookingState extends State<Booking> {
       print("Error reserving seats: $e");
     }
   }
- 
 
   // Future<void> saveCardInformation() async {
   //   // Get current user
@@ -228,4 +226,4 @@ class _BookingState extends State<Booking> {
   //     }
   //   }
   // }
-  }
+}
