@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/eventpage.dart';
 import 'package:evena/widgets/drawers.dart';
 import 'package:flutter/material.dart';
+import 'package:evena/Theme/theme_provider.dart';
+import 'package:evena/Theme/themedata.dart';
+import 'package:provider/provider.dart';
 
 class Event {
   final String title;
@@ -153,6 +156,15 @@ class _UserHomeState extends State<UserHome> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    // Define text and button color based on the theme
+    Color textColor =
+        themeProvider.themeData == lightMode ? Colors.black : Colors.white;
+    Color buttonColor = themeProvider.themeData == lightMode
+        ? const Color.fromARGB(255, 255, 170, 0)
+        : Colors.black;
+
     return Scaffold(
       drawer: DrawerWidget(
         title: 'Event Page',
@@ -162,7 +174,14 @@ class _UserHomeState extends State<UserHome> {
         actions: [
           IconButton(
             icon: Icon(Icons.filter_list),
-            onPressed: toggleFilter,
+            onPressed: toggleFilter, // Call the toggleFilter function
+          ),
+          IconButton(
+            icon: Icon(Icons.lightbulb_outline),
+            onPressed: () {
+              // Toggle dark mode
+              themeProvider.toggleTheme();
+            },
           ),
         ],
       ),
