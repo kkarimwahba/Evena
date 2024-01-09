@@ -77,7 +77,7 @@ class _SignupState extends State<Signup> {
                     color: Colors.white.withOpacity(1.0),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child:Form(
+                  child: Form(
                     key: _formKey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -200,41 +200,33 @@ class _SignupState extends State<Signup> {
                           height: 0.13 * MediaQuery.of(context).size.width,
                           child: ElevatedButton(
                             onPressed: () async {
-                    
-                             if (_formKey.currentState!.validate()) {
-                                User? user1=await registerWithEmailAndPassword(emailController.text.trim(), passwordController.text.trim(),usernamecontroller.text.trim(),phonenumbercontroller.text.trim());
-                                 Navigator.of(context).push(MaterialPageRoute(
-                                builder: (c) {
-                                  return Login();
-                                },
-                              ));
-                            
-                             }
-                             
-                             
+                              if (_formKey.currentState!.validate()) {
+                                User? user1 =
+                                    await registerWithEmailAndPassword(
+                                        emailController.text.trim(),
+                                        passwordController.text.trim(),
+                                        usernamecontroller.text.trim(),
+                                        phonenumbercontroller.text.trim());
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (c) {
+                                    return Login();
+                                  },
+                                ));
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.amberAccent[700],
                             ),
                             child: const Text(
                               'Signup',
-                              style: TextStyle(color: Colors.white, fontSize: 25),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 25),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: 0.8 * MediaQuery.of(context).size.width,
-                        height: 0.13 * MediaQuery.of(context).size.width,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            User? user1 = await registerWithEmailAndPassword(
-                                emailController.text.trim(),
-                                passwordController.text.trim(),
-                                usernamecontroller.text.trim(),
-                                phonenumbercontroller.text.trim());
-
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) {
                                 return Login();
@@ -242,8 +234,9 @@ class _SignupState extends State<Signup> {
                             ));
                           },
                           child: const Text(
-                            'If you have already account? Log in here!',
-                            style: TextStyle(color: Colors.black, fontSize: 12),
+                            'If you dont have an account? Log in here!',
+                            style:
+                                TextStyle(fontSize: 12.25, color: Colors.black),
                           ),
                         ),
                         const SizedBox(
@@ -260,8 +253,8 @@ class _SignupState extends State<Signup> {
                               padding: EdgeInsets.symmetric(horizontal: 10),
                               child: Text(
                                 'OR',
-                                style:
-                                    TextStyle(color: Colors.black, fontSize: 15),
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 15),
                               ),
                             ),
                             Text(

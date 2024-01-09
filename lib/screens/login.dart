@@ -19,6 +19,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final Key _uniqueKey = UniqueKey();
 
   @override
   Widget build(BuildContext context) {
@@ -93,12 +94,11 @@ class _LoginState extends State<Login> {
                               ),
                               hintStyle: TextStyle(color: Colors.black),
                             ),
-                            validator:(value) {
+                            validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your Email';
-                              }
-                              else if(!RegExp(r'\S+@\S+\.\S+').hasMatch(value))
-                              {
+                              } else if (!RegExp(r'\S+@\S+\.\S+')
+                                  .hasMatch(value)) {
                                 return 'Enter valid Email';
                               }
                               return null;
@@ -138,67 +138,48 @@ class _LoginState extends State<Login> {
                             },
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 50),
-                      SizedBox(
-                        width: 0.8 * MediaQuery.of(context).size.width,
-                        height: 0.13 * MediaQuery.of(context).size.width,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            User? user = await signinwithemailandpassword(
-                                emailController.text.trim(),
-                                passwordController.text.trim());
+                        const SizedBox(height: 15),
+                        SizedBox(
+                          width: 0.8 * MediaQuery.of(context).size.width,
+                          height: 0.13 * MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              User? user = await signinwithemailandpassword(
+                                  emailController.text.trim(),
+                                  passwordController.text.trim());
 
-                            QuerySnapshot<Map<String, dynamic>> querySnapshot =
-                                await FirebaseFirestore.instance
-                                    .collection('users')
-                                    .where('uid', isEqualTo: user!.uid)
-                                    .limit(1)
-                                    .get();
+                              QuerySnapshot<Map<String, dynamic>>
+                                  querySnapshot = await FirebaseFirestore
+                                      .instance
+                                      .collection('users')
+                                      .where('uid', isEqualTo: user!.uid)
+                                      .limit(1)
+                                      .get();
 
-                            if (querySnapshot.docs.isNotEmpty) {
-                              String role =
-                                  querySnapshot.docs.first.get('role') ??
-                                      ''; // Get user role
+                              if (querySnapshot.docs.isNotEmpty) {
+                                String role =
+                                    querySnapshot.docs.first.get('role') ??
+                                        ''; // Get user role
 
-                              if (role == 'user') {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => UserHome(),
-                                ));
-                              } else if (role == 'admin') {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => Admin(),
-                                ));
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Wrong email or password'),
-                                    duration: Duration(
-                                        seconds:
-                                            3), // Adjust the duration as needed
-                                  ),
-                                );
+                                if (role == 'user') {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => UserHome(),
+                                  ));
+                                } else if (role == 'admin') {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => Admin(),
+                                  ));
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Wrong email or password'),
+                                      duration: Duration(
+                                          seconds:
+                                              3), // Adjust the duration as needed
+                                    ),
+                                  );
+                                }
                               }
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 255, 170, 0),
-                          ),
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 255, 255, 255),
-                                fontSize: 25),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (c) {
-                              return Signup();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
@@ -212,6 +193,25 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                            //  style: ElevatedButton.styleFrom(
+                            //     backgroundColor:
+                            //         const Color.fromARGB(255, 255, 170, 0),
+                            //   ),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  fontSize: 25),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (c) {
+                                  return Signup();
+                                },
+                              ));
+                            }),
                         GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
@@ -220,12 +220,12 @@ class _LoginState extends State<Login> {
                               },
                             ));
                           },
-                          child: Text(
+                          child: const Text(
                             'If you dont have an account? Sign up here!',
                             style: TextStyle(color: Colors.black, fontSize: 12),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 15,
                         ),
                         Row(
@@ -237,7 +237,7 @@ class _LoginState extends State<Login> {
                                 primary: Colors.white, // Button color
                                 onPrimary: Colors.black, // Text color
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   ImageIcon(
                                     AssetImage('assets/images/googlelogo.png'),
@@ -248,14 +248,14 @@ class _LoginState extends State<Login> {
                                 ],
                               ),
                             ),
-                            SizedBox(width: 20),
+                            const SizedBox(width: 20),
                             ElevatedButton(
                               onPressed: () {},
                               style: ElevatedButton.styleFrom(
                                 primary: Colors.white, // Button color
                                 onPrimary: Colors.black, // Text color
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Icon(
                                     Icons.apple,
