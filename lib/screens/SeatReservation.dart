@@ -43,20 +43,24 @@ class _SeatReservationState extends State<SeatReservation> {
     fetchReservedSeats();
   }
 
+  Stream<DocumentSnapshot> getSeatDocumentStream() {
+    return FirebaseFirestore.instance
+        .collection('seats')
+        .doc(widget.title)
+        .snapshots();
+  }
+
   Future<void> fetchReservedSeats() async {
     try {
-      // Fetch reserved seats for the specific event title from Firestore
       String title = widget.title;
       DocumentSnapshot seatDocument = await FirebaseFirestore.instance
           .collection('seats')
-          .doc(widget.title) // Use event title as the document ID
+          .doc(widget.title)
           .get();
 
-      // Initialize seatStatusList based on available seats
       seatStatusList =
           List.generate(columns * rows, (index) => SeatStatus.available);
 
-      // Update seatStatusList based on reserved seats for the current event
       if (seatDocument.exists) {
         List<int> reservedSeats = List<int>.from(seatDocument['seats']);
         reservedSeats.forEach((seatNumber) {
@@ -66,7 +70,6 @@ class _SeatReservationState extends State<SeatReservation> {
         });
       }
 
-      // Update the UI to reflect the reserved seats
       setState(() {
         seatsReserved = seatStatusList.contains(SeatStatus.reserved);
       });
@@ -77,51 +80,43 @@ class _SeatReservationState extends State<SeatReservation> {
 
   Future<void> reserveSeats(List<int> selectedSeats) async {
     try {
-      // Fetch existing reserved seats
       DocumentSnapshot seatDocument = await FirebaseFirestore.instance
           .collection('seats')
           .doc(widget.title)
           .get();
 
-      // Get the current list of reserved seats or initialize an empty list
       List<int> existingReservedSeats =
           List<int>.from(seatDocument['seats'] ?? []);
 
-      // Add newly reserved seats to the existing list
       existingReservedSeats.addAll(selectedSeats);
 
-      // Update reservation in Firestore
       await FirebaseFirestore.instance
           .collection('seats')
           .doc(widget.title)
           .set({'seats': existingReservedSeats}, SetOptions(merge: true));
-
-      // Optionally, you can perform additional actions after reservation
     } catch (e) {
       print("Error reserving seats: $e");
     }
   }
 
   void checkReservationStatus() {
-    // You can customize this logic based on your requirements
     setState(() {
       seatsReserved = seatStatusList.contains(SeatStatus.reserved);
     });
   }
 
-  Color getSeatColor(SeatStatus status) {
-    switch (status) {
-      case SeatStatus.available:
-        return Colors.green;
-      case SeatStatus.selected:
-        return Colors.orange;
-      case SeatStatus.reserved:
-        return Colors.red;
+  Color getSeatColor(int seatNumber, List<int> reservedSeats) {
+    if (selectedSeats.contains(seatNumber)) {
+      return Colors.orange;
+    } else if (reservedSeats.contains(seatNumber)) {
+      return Colors.red;
+    } else {
+      return Colors.green;
     }
   }
 
-  Color getTextColor(SeatStatus status) {
-    return status == SeatStatus.available ? Colors.white : Colors.black;
+  Color getTextColor(int seatNumber, List<int> reservedSeats) {
+    return selectedSeats.contains(seatNumber) ? Colors.black : Colors.white;
   }
 
   @override
@@ -139,46 +134,62 @@ class _SeatReservationState extends State<SeatReservation> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columns,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-              ),
-              itemCount: columns * rows,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                int seatNumber = index + 1;
-                SeatStatus seatStatus = seatStatusList[index];
+            StreamBuilder<DocumentSnapshot>(
+              stream: getSeatDocumentStream(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (seatStatus == SeatStatus.available) {
-                        seatStatusList[index] = SeatStatus.selected;
-                        selectedSeats.add(seatNumber);
-                      } else if (seatStatus == SeatStatus.selected) {
-                        seatStatusList[index] = SeatStatus.available;
-                        selectedSeats.remove(seatNumber);
-                      }
-                    });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: getSeatColor(seatStatus),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.black),
-                    ),
-                    child: Center(
-                      child: Text(
-                        seatNumber.toString(),
-                        style: TextStyle(
-                          color: getTextColor(seatStatus),
-                          fontWeight: FontWeight.bold,
+                if (snapshot.hasError) {
+                  return Text("Error: ${snapshot.error}");
+                }
+
+                List<int> reservedSeats =
+                    List<int>.from(snapshot.data!['seats']);
+
+                return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                  ),
+                  itemCount: columns * rows,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    int seatNumber = index + 1;
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (seatStatusList[index] == SeatStatus.available) {
+                            seatStatusList[index] = SeatStatus.selected;
+                            selectedSeats.add(seatNumber);
+                          } else if (seatStatusList[index] ==
+                              SeatStatus.selected) {
+                            seatStatusList[index] = SeatStatus.available;
+                            selectedSeats.remove(seatNumber);
+                          }
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: getSeatColor(seatNumber, reservedSeats),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.black),
+                        ),
+                        child: Center(
+                          child: Text(
+                            seatNumber.toString(),
+                            style: TextStyle(
+                              color: getTextColor(seatNumber, reservedSeats),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             ),
