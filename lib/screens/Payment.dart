@@ -140,33 +140,32 @@ class _PaymentState extends State<Payment> {
               },
             ),
             TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'CVV Code',
-              ),
-              keyboardType: TextInputType.number,
-              controller: cvvCodeController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a valid CVV code';
-                }
-                if (value.length != maxccvNumber) {
-                  return 'Card number must have $maxccvNumber digits';
-                }
-                return null;
-              },
-              onChanged: (value) {
-                value = value.replaceAll(RegExp(r'\D'), '');
-                if (value.length > maxccvNumber) {
-                  value = value.substring(0, maxccvNumber);
-                }
-                cvvCodeController.value = TextEditingValue(
-                  text: value,
-                  selection: TextSelection.fromPosition(
-                    TextPosition(offset: value.length),
-                  ),
-                );
-              },
-            ),
+                decoration: const InputDecoration(
+                  labelText: 'CVV Code',
+                ),
+                keyboardType: TextInputType.number,
+                controller: cvvCodeController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a valid CVV code';
+                  }
+                  if (value.length != maxccvNumber) {
+                    return 'Card number must have $maxccvNumber digits';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  value = value.replaceAll(RegExp(r'\D'), '');
+                  if (value.length > maxccvNumber) {
+                    value = value.substring(0, maxccvNumber);
+                  }
+                  cvvCodeController.value = TextEditingValue(
+                    text: value,
+                    selection: TextSelection.fromPosition(
+                      TextPosition(offset: value.length),
+                    ),
+                  );
+                }),
             const SizedBox(height: 20),
             SizedBox(
               width: 200,
