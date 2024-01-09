@@ -1,79 +1,65 @@
-import 'dart:convert';
-import 'package:evena/models/users.dart';
-import 'package:http/http.dart' as http;
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'dart:async';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class SendEmail {
-  String name;
-  String subject;
-  String message;
+// class ReminderHelper {
+//   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//       FlutterLocalNotificationsPlugin();
 
-  SendEmail({
-    required this.name,
-    required this.subject,
-    required this.message,
-  });
+//   static const int eventReminderNotificationId = 0;
 
-  Future<void> sendReminderEmail() async {
-    final serviceId = 'service_13mv458';
-    final templateId = 'template_jz85apg';
-    final userId = '';
+//   ReminderHelper() {
+//     initializeNotifications();
+//   }
 
-    final Uri url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+//   Future<void> initializeNotifications() async {
+//     const AndroidInitializationSettings initializationSettingsAndroid =
+//         AndroidInitializationSettings('app_icon');
 
-    // Get the user's email from Firebase
-    String userEmail = await getUserEmail();
+//     final InitializationSettings initializationSettings =
+//         InitializationSettings(android: initializationSettingsAndroid);
 
-    // Check if the event is tomorrow
-    DateTime eventDate =
-        DateTime(2024, 1, 6); // Replace with the actual event date
-    DateTime tomorrow = DateTime.now().add(Duration(days: 1));
+//     await flutterLocalNotificationsPlugin.initialize(
+//       initializationSettings,
+//     );
+//   }
 
-    if (eventDate.year == tomorrow.year &&
-        eventDate.month == tomorrow.month &&
-        eventDate.day == tomorrow.day) {
-      String formattedDate =
-          '${eventDate.year}-${eventDate.month}-${eventDate.day}';
+//   void scheduleReminder(Event event) {
+//     final int reminderDelaySeconds =
+//         0; // Delay in seconds before showing the reminder
 
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'service_id': serviceId,
-          'template_id': templateId,
-          'user_id': userId,
-          'template_params': {
-            'to_email': userEmail,
-            'subject': subject,
-            'message': '$message\nEvent is tomorrow on $formattedDate',
-          },
-        }),
-      );
+//     Timer(Duration(seconds: reminderDelaySeconds), () {
+//       // This code will run after the specified delay
+//       showReminderNotification(event);
+//     });
+//   }
 
-      print(response.body);
-    } else {
-      print('Event is not tomorrow.');
-    }
-  }
+//   void showReminderNotification(Event event) async {
+//     const AndroidNotificationDetails androidPlatformChannelSpecifics =
+//         AndroidNotificationDetails(
+//       'event_reminders',
+//       'Event Reminders',
+//       importance: Importance.max,
+//       priority: Priority.high,
+//       showWhen: false,
+//       sound: RawResourceAndroidNotificationSound('notification_sound'),
+//     );
 
-  Future<String> getUserEmail() async {
-    // Query Firebase for the user's email
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
-        .instance
-        .collection('users')
-        .where('uid',
-            isEqualTo: user!.uid) // Assuming user is accessible in this context
-        .limit(1)
-        .get();
+//     const NotificationDetails platformChannelSpecifics =
+//         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    // Extract the email from the query result
-    if (querySnapshot.docs.isNotEmpty) {
-      return querySnapshot.docs.first[
-          'email']; // Replace 'email' with the actual field in your document
-    } else {
-      throw Exception('User not found or email field is missing.');
-    }
-  }
-}
+//     await flutterLocalNotificationsPlugin.show(
+//       0,
+//       'Event Reminder',
+//       'Event: ${event.title} is tomorrow!',
+//       platformChannelSpecifics,
+//       payload: 'event_id_${event.title}', // You can customize the payload
+//     );
+//   }
+// }
+
+// class Event {
+//   final String title;
+//   final DateTime date;
+
+//   Event({required this.title, required this.date});
+// }

@@ -3,7 +3,6 @@ import 'package:evena/screens/adminHome.dart';
 import 'package:evena/screens/signup.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:evena/services/firebase_auth.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +19,30 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Key _uniqueKey = UniqueKey();
+
+  Future<void> checkAndShowEventSnackbar(User user) async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
+        .instance
+        .collection('events')
+        .where('date',
+            isGreaterThanOrEqualTo: DateTime.now().toLocal().toIso8601String())
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      String eventTitle = querySnapshot.docs.first.get('title');
+      DateTime eventDate = DateTime.parse(querySnapshot.docs.first.get('date'));
+
+      // Show SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Event: $eventTitle on ${eventDate.toLocal()}'),
+          duration: Duration(seconds: 8),
+          backgroundColor: const Color.fromARGB(255, 135, 135, 135),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +171,8 @@ class _LoginState extends State<Login> {
                                   emailController.text.trim(),
                                   passwordController.text.trim());
 
+                              await checkAndShowEventSnackbar(user!);
+
                               QuerySnapshot<Map<String, dynamic>>
                                   querySnapshot = await FirebaseFirestore
                                       .instance
@@ -158,8 +183,7 @@ class _LoginState extends State<Login> {
 
                               if (querySnapshot.docs.isNotEmpty) {
                                 String role =
-                                    querySnapshot.docs.first.get('role') ??
-                                        ''; // Get user role
+                                    querySnapshot.docs.first.get('role') ?? '';
 
                                 if (role == 'user') {
                                   Navigator.of(context).push(MaterialPageRoute(
@@ -173,9 +197,7 @@ class _LoginState extends State<Login> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('Wrong email or password'),
-                                      duration: Duration(
-                                          seconds:
-                                              3), // Adjust the duration as needed
+                                      duration: Duration(seconds: 3),
                                     ),
                                   );
                                 }
@@ -195,10 +217,6 @@ class _LoginState extends State<Login> {
                         ),
                         const SizedBox(height: 10),
                         GestureDetector(
-                            //  style: ElevatedButton.styleFrom(
-                            //     backgroundColor:
-                            //         const Color.fromARGB(255, 255, 170, 0),
-                            //   ),
                             child: const Text(
                               'Login',
                               style: TextStyle(
