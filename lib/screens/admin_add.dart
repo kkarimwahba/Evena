@@ -187,6 +187,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     image: imageUrl,
                     availability:
                         int.parse(eventAvailabilityController.text.trim()),
+                    imagePath: null,
                   );
 
                   EventService eventService = EventService();

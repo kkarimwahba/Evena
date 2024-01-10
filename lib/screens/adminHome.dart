@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:evena/screens/adminEventUpdate.dart';
 import 'package:evena/screens/admin_add.dart';
 import 'package:evena/screens/adminprofile.dart';
 import 'package:flutter/material.dart';
@@ -77,20 +79,47 @@ class _AdminState extends State<Admin> {
 }
 
 class Events extends StatelessWidget {
-  const Events({super.key});
-
   @override
   Widget build(BuildContext context) {
-    // final _controller = ScrollController();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
-          children: [
-            Text('Event Management'),
-            SizedBox(width: 100),
-          ],
-        ),
+        title: const Text('Event Management'),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('events').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No events available.'));
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var event = snapshot.data!.docs[index].data()
+                  as Map<String, dynamic>;
+
+                return EventCard(
+                        imagePath: event['image'] ?? '',
+                        title: event['title'] ?? '',
+                        description: event['description'] ?? '',
+                        date: DateTime.parse(event['date'] ?? ''),
+                        time: event['time'] ?? '',
+                        location: event['location'] ?? '',
+                        category: event['category'] ?? '',
+                        price: event['price']?.toString() ?? '',
+                        availability: event['availability']?.toString() ?? '',
+              );
+            },
+          );
+        },
       ),
     );
   }
