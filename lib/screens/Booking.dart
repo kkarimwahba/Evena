@@ -208,7 +208,11 @@ class _BookingState extends State<Booking> {
           await documentRefrence
               .collection('tickets')
               .doc()
-              .set({'seats': selectedSeats});
+              .set({
+                
+                'seats': selectedSeats,
+              
+              });
         } else {
           print('error');
         }

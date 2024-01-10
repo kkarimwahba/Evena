@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:evena/screens/admineditEvent.dart';
 import 'package:evena/screens/eventpage.dart';
 import 'package:flutter/material.dart';
 
@@ -254,21 +255,21 @@ class EventCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EventDetailsPage(
+                  builder: (context) => EditEventPage(
+                    imagePath: imagePath,
                     title: title,
                     description: description,
                     date: date,
                     time: time,
                     location: location,
                     category: category,
-                    price: price,
-                    imagePath: imagePath,
+                    price: price,                  
                     availability: availability,
                   ),
                 ),
               );
             },
-            child: const Text('Update!'),
+            child: const Text('Edit!'),
           ),
         ],
       ),
