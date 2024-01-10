@@ -64,7 +64,7 @@ dependencies:
   url_launcher: ^6.2.2
   connectivity: ^3.0.6
   sqflite: ^2.3.0
-  flutter_local_notifications: ^16.3.0
+  #flutter_local_notifications: ^16.3.0
   #flutter_devtools: ^2.8.0
   # google_maps_flutter: ^2.5.0
   #open_street_map_search_and_pick: ^0.0.12
