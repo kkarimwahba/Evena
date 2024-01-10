@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evena/screens/adminHome.dart';
+import 'package:evena/screens/reminder.dart';
 import 'package:evena/screens/signup.dart';
 import 'package:evena/screens/userHome.dart';
 import 'package:evena/services/firebase_auth.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
@@ -19,7 +20,82 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final Key _uniqueKey = UniqueKey();
+
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
+  }
+
+  void showReminderNotification(BuildContext context, User user) async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
+        .instance
+        .collection('events')
+        .where('date',
+            isGreaterThanOrEqualTo: DateTime.now().toLocal().toIso8601String())
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      QueryDocumentSnapshot<Map<String, dynamic>> eventData =
+          querySnapshot.docs.first;
+      String eventTitle = eventData.get('title');
+      DateTime eventDate = DateTime.parse(eventData.get('date'));
+
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'event_reminders',
+        'Event Reminders',
+        importance: Importance.max,
+        priority: Priority.high,
+        ticker: 'ticker',
+        showWhen: false,
+        sound: RawResourceAndroidNotificationSound('notification_sound'),
+      );
+
+      const NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+
+      // Show the notification
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Event Reminder',
+        'Event: $eventTitle is tomorrow!',
+        platformChannelSpecifics,
+        payload: 'event_id_$eventTitle',
+      );
+
+      // Dismiss the notification after 7 seconds
+      Future.delayed(const Duration(seconds: 5), () async {
+        await flutterLocalNotificationsPlugin.cancel(0);
+      });
+
+      // Show a SnackBar with the notification message at the top of the screen
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Event: $eventTitle on ${eventDate.toLocal()}'),
+          duration: Duration(seconds: 7),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color.fromARGB(255, 135, 135, 135),
+        ),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeNotifications();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +224,12 @@ class _LoginState extends State<Login> {
                                   emailController.text.trim(),
                                   passwordController.text.trim());
 
+                              print(
+                                  'Login successful, showing notification...');
+                              Event event = Event(
+                                  title: 'Sample Event', date: DateTime.now());
+                              showReminderNotification(context, user!);
+
                               QuerySnapshot<Map<String, dynamic>>
                                   querySnapshot = await FirebaseFirestore
                                       .instance
@@ -158,8 +240,7 @@ class _LoginState extends State<Login> {
 
                               if (querySnapshot.docs.isNotEmpty) {
                                 String role =
-                                    querySnapshot.docs.first.get('role') ??
-                                        ''; // Get user role
+                                    querySnapshot.docs.first.get('role') ?? '';
 
                                 if (role == 'user') {
                                   Navigator.of(context).push(MaterialPageRoute(
@@ -173,9 +254,7 @@ class _LoginState extends State<Login> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('Wrong email or password'),
-                                      duration: Duration(
-                                          seconds:
-                                              3), // Adjust the duration as needed
+                                      duration: Duration(seconds: 3),
                                     ),
                                   );
                                 }
@@ -195,10 +274,6 @@ class _LoginState extends State<Login> {
                         ),
                         const SizedBox(height: 10),
                         GestureDetector(
-                            //  style: ElevatedButton.styleFrom(
-                            //     backgroundColor:
-                            //         const Color.fromARGB(255, 255, 170, 0),
-                            //   ),
                             child: const Text(
                               'Login',
                               style: TextStyle(
@@ -275,6 +350,38 @@ class _LoginState extends State<Login> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class Event {
+  final String title;
+  final DateTime date;
+
+  Event({required this.title, required this.date});
+}
+
+class EventDetailsScreen extends StatelessWidget {
+  final Event event;
+
+  EventDetailsScreen(this.event);
+
+  @override
+  Widget build(BuildContext context) {
+    // Add your implementation for the event details screen
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Event Details'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Event Title: ${event.title}'),
+            Text('Event Date: ${event.date}'),
+          ],
         ),
       ),
     );

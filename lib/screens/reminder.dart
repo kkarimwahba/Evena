@@ -1,79 +1,89 @@
-import 'dart:convert';
-import 'package:evena/models/users.dart';
-import 'package:http/http.dart' as http;
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:evena/screens/login.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class SendEmail {
-  String name;
-  String subject;
-  String message;
+// class ReminderPage extends StatelessWidget {
+ 
+//   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//       FlutterLocalNotificationsPlugin();
 
-  SendEmail({
-    required this.name,
-    required this.subject,
-    required this.message,
-  });
+//   Future<void> initializeNotifications() async {
+//     const AndroidInitializationSettings initializationSettingsAndroid =
+//         AndroidInitializationSettings('app_icon');
 
-  Future<void> sendReminderEmail() async {
-    final serviceId = 'service_13mv458';
-    final templateId = 'template_jz85apg';
-    final userId = '';
+//     final InitializationSettings initializationSettings =
+//         InitializationSettings(android: initializationSettingsAndroid);
 
-    final Uri url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+//     await flutterLocalNotificationsPlugin.initialize(
+//       initializationSettings,
+//     );
+//   }
 
-    // Get the user's email from Firebase
-    String userEmail = await getUserEmail();
+//   void showReminderNotification(BuildContext context, Event event) async {
+//     const AndroidNotificationDetails androidPlatformChannelSpecifics =
+//         AndroidNotificationDetails(
+//       'event_reminders',
+//       'Event Reminders',
+//       importance: Importance.max,
+//       priority: Priority.high,
+//       ticker: 'ticker', // add this line to display ticker text
+//       showWhen: false,
+//       sound: RawResourceAndroidNotificationSound('notification_sound'),
+//     );
 
-    // Check if the event is tomorrow
-    DateTime eventDate =
-        DateTime(2024, 1, 6); // Replace with the actual event date
-    DateTime tomorrow = DateTime.now().add(Duration(days: 1));
+//     const NotificationDetails platformChannelSpecifics =
+//         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    if (eventDate.year == tomorrow.year &&
-        eventDate.month == tomorrow.month &&
-        eventDate.day == tomorrow.day) {
-      String formattedDate =
-          '${eventDate.year}-${eventDate.month}-${eventDate.day}';
+//     // Show the notification
+//     await flutterLocalNotificationsPlugin.show(
+//       0,
+//       'Event Reminder',
+//       'Event: ${event.title} is tomorrow!',
+//       platformChannelSpecifics,
+//       payload: 'event_id_${event.title}', // You can customize the payload
+//     );
 
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'service_id': serviceId,
-          'template_id': templateId,
-          'user_id': userId,
-          'template_params': {
-            'to_email': userEmail,
-            'subject': subject,
-            'message': '$message\nEvent is tomorrow on $formattedDate',
-          },
-        }),
-      );
+//     // Dismiss the notification after 8 seconds
+//     Future.delayed(const Duration(seconds: 8), () async {
+//       await flutterLocalNotificationsPlugin.cancel(0);
+//     });
 
-      print(response.body);
-    } else {
-      print('Event is not tomorrow.');
-    }
-  }
+//     // Handle notification tap, for example, navigate to a screen
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(builder: (context) => EventDetailsScreen(event)),
+//     );
+//   }
 
-  Future<String> getUserEmail() async {
-    // Query Firebase for the user's email
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
-        .instance
-        .collection('users')
-        .where('uid',
-            isEqualTo: user!.uid) // Assuming user is accessible in this context
-        .limit(1)
-        .get();
+//   @override
+//   void initState() {
+//     super.initState();
+//     initializeNotifications();
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     initializeNotifications(context); // Call the initialization method
 
-    // Extract the email from the query result
-    if (querySnapshot.docs.isNotEmpty) {
-      return querySnapshot.docs.first[
-          'email']; // Replace 'email' with the actual field in your document
-    } else {
-      throw Exception('User not found or email field is missing.');
-    }
-  }
-}
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Reminder Page'),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Text('This is the Reminder Page'),
+//             ElevatedButton(
+//               onPressed: () {
+//                 Event event =
+//                     Event(title: 'Sample Event', date: DateTime.now());
+//                 showReminderNotification(event);
+//               },
+//               child: Text('Show Reminder Notification'),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

@@ -48,6 +48,7 @@ class _UserHomeState extends State<UserHome> {
   final TextEditingController _searchController = TextEditingController();
   bool _showFilter = false;
   String _selectedFilter = 'title';
+  List<String> _searchHistory = [];
 
   List<Event> allEvents = [];
   List<Event> filteredEvents = [];
@@ -64,7 +65,6 @@ class _UserHomeState extends State<UserHome> {
 
   void fetchEvents() async {
     try {
-      // Set loading to true to indicate that events are being fetched
       setState(() {
         loading = true;
       });
@@ -75,15 +75,12 @@ class _UserHomeState extends State<UserHome> {
       DateTime currentDate = DateTime.now();
 
       setState(() {
-        // Initialize the lists with the correct type
         allEvents = List<Event>.from(snapshot.docs.map((doc) {
           var event = doc.data() as Map<String, dynamic>;
 
-          // Check if the event date is in the future
           final isFutureEvent =
               DateTime.parse(event['date'] ?? '').isAfter(currentDate);
 
-          // Include the event only if it has a future date
           if (isFutureEvent) {
             return Event(
               title: event['title'] ?? '',
@@ -98,13 +95,11 @@ class _UserHomeState extends State<UserHome> {
             );
           }
 
-          return null; // Exclude events with past dates
+          return null;
         }).where((event) => event != null));
 
-        // Initialize the filteredEvents list with all events initially
         filteredEvents = List<Event>.from(allEvents);
 
-        // Set loading back to false now that events are fetched
         loading = false;
       });
     } catch (error) {
@@ -137,20 +132,19 @@ class _UserHomeState extends State<UserHome> {
   }
 
   void applyFilters(String searchValue) {
-    print('Applying filters with: $searchValue');
     DateTime currentDate = DateTime.now();
 
     setState(() {
+      _searchHistory.add(searchValue);
+
       filteredEvents = allEvents.where((event) {
         final filterValue = _getFilterValue(event);
         final containsValue = filterValue
             .toLowerCase()
             .contains(searchValue.trim().toLowerCase());
 
-        // Check if the event date is in the future
         final isFutureEvent = event.date.isAfter(currentDate);
 
-        // Return true only if the event matches the search criteria and is in the future
         return containsValue && isFutureEvent;
       }).toList();
     });
@@ -176,9 +170,13 @@ class _UserHomeState extends State<UserHome> {
     });
 
     if (_showFilter) {
-      // Apply filters when the filter icon is tapped
       applyFilters(_searchController.text);
     }
+  }
+
+  void undoSearch() {
+    _searchController.clear();
+    applyFilters('');
   }
 
   @override
@@ -191,7 +189,6 @@ class _UserHomeState extends State<UserHome> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    // Define text and button color based on the theme
     Color textColor =
         themeProvider.themeData == lightMode ? Colors.black : Colors.white;
     Color buttonColor = themeProvider.themeData == lightMode
@@ -236,12 +233,15 @@ class _UserHomeState extends State<UserHome> {
                   child: TextField(
                     controller: _searchController,
                     onChanged: (value) {
-                      // Apply filters when search bar changes
                       applyFilters(value);
                     },
                     decoration: InputDecoration(
                       hintText: "Search",
                       prefixIcon: const Icon(Icons.search),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.undo),
+                        onPressed: undoSearch,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -275,7 +275,6 @@ class _UserHomeState extends State<UserHome> {
                       _selectedFilter = value!;
                     });
 
-                    // Apply filters when the filter type changes
                     applyFilters(_searchController.text);
                   },
                 ),
@@ -360,13 +359,12 @@ class EventCard extends StatelessWidget {
               Image.network(
                 imagePath,
                 fit: BoxFit.cover,
-                height: 200, // Set the desired height
+                height: 200,
                 loadingBuilder: (BuildContext context, Widget child,
                     ImageChunkEvent? loadingProgress) {
                   if (loadingProgress == null) {
                     return child;
                   } else {
-                    // Display a loading indicator while the image is loading
                     return Center(
                       child: CircularProgressIndicator(),
                     );
