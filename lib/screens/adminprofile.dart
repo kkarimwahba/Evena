@@ -60,12 +60,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage(
-                  'assets/images/messi.jpg'), // Change with your image
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             Text(
               adminName, // Use the fetched admin name
               textAlign: TextAlign.center,
