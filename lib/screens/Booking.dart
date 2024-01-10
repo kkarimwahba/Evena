@@ -67,117 +67,122 @@ class _BookingState extends State<Booking> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  errorText: isNameValid ? null : 'Please enter a valid name',
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    name = value;
-                    isNameValid = value.isNotEmpty;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  errorText: isPhoneNumberValid
-                      ? null
-                      : 'Please enter a valid phone number (e.g., 123-456-7890)',
-                ),
-                keyboardType: TextInputType.phone,
-                onChanged: (value) {
-                  setState(() {
-                    phoneNumber = value;
-                    isPhoneNumberValid = value.isNotEmpty;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  errorText: isEmailValid
-                      ? null
-                      : 'Please enter a valid email address',
-                ),
-                keyboardType: TextInputType.emailAddress,
-                onChanged: (value) {
-                  setState(() {
-                    email = value;
-                    isEmailValid =
-                        RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      errorText:
+                          isNameValid ? null : 'Please enter a valid name',
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        name = value;
+                        isNameValid = value.isNotEmpty;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Phone Number',
+                      errorText: isPhoneNumberValid
+                          ? null
+                          : 'Please enter a valid phone number (e.g., 123-456-7890)',
+                    ),
+                    keyboardType: TextInputType.phone,
+                    onChanged: (value) {
+                      setState(() {
+                        phoneNumber = value;
+                        isPhoneNumberValid = value.isNotEmpty;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      errorText: isEmailValid
+                          ? null
+                          : 'Please enter a valid email address',
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (value) {
+                      setState(() {
+                        email = value;
+                        isEmailValid = RegExp(
+                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
                             .hasMatch(value);
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
-              const SizedBox(height: 16.0),
-              Text(
-                "Selected Seats: ${widget.selectedSeats.join(', ')}",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16.0),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 200,
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: isFormValid()
-                      ? () async {
-                          // await storeUserData();
-                          await reserveSeats(widget.selectedSeats);
-                          // await saveCardInformation();
-                          if (name.isEmpty ||
-                              phoneNumber.isEmpty ||
-                              email.isEmpty) {
-                            showErrorSnackBar(
-                                context, 'Invalid Form or Card Details');
-                          } else {
-                            // Your existing code for button press
-                            // e.g., await storeUserData();
-                            // await reserveSeats(widget.selectedSeats);
-                            // await saveCardInformation();
-                            showSuccessSnackBar(context, 'Booking Successful');
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (c) {
-                                return Payment(
-                                  title: widget.title,
-                                  description: widget.description,
-                                  date: widget.date,
-                                  time: widget.time,
-                                  location: widget.location,
-                                  category: widget.category,
-                                  price: widget.price,
-                                  imagePath: widget.imagePath,
-                                  availability: widget.availability,
-                                );
-                              },
-                            ));
-                          }
-                        }
-                      : () {
-                          showErrorSnackBar(
-                              context, 'Invalid Form or Card Details');
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+                      });
+                    },
                   ),
-                  child: const Text(
-                    'Checkout',
-                    style: TextStyle(fontSize: 25, color: Colors.black),
+                  const SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
+                  Text(
+                    "Selected Seats: ${widget.selectedSeats.join(', ')}",
+                    style:
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
-                ),
+                  const SizedBox(height: 16.0),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: 200,
+                    height: 60,
+                    child: ElevatedButton(
+                      onPressed: isFormValid()
+                          ? () async {
+                              // ... Your existing button press logic ...
+                              if (name.isEmpty ||
+                                  phoneNumber.isEmpty ||
+                                  email.isEmpty) {
+                                showErrorSnackBar(
+                                    context, 'Invalid Form or Card Details');
+                              } else {
+                                // Your existing code for button press
+                                // e.g., await storeUserData();
+                                // await reserveSeats(widget.selectedSeats);
+                                // await saveCardInformation();
+                                showSuccessSnackBar(
+                                    context, 'Booking Successful');
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (c) {
+                                    return Payment(
+                                      title: widget.title,
+                                      description: widget.description,
+                                      date: widget.date,
+                                      time: widget.time,
+                                      location: widget.location,
+                                      category: widget.category,
+                                      price: widget.price,
+                                      imagePath: widget.imagePath,
+                                      availability: widget.availability,
+                                    );
+                                  },
+                                ));
+                              }
+                            }
+                          : () {
+                              showErrorSnackBar(
+                                  context, 'Invalid Form or Card Details');
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 255, 170, 0),
+                      ),
+                      child: const Text(
+                        'Checkout',
+                        style: TextStyle(fontSize: 25, color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -237,5 +242,4 @@ class _BookingState extends State<Booking> {
   //     }
   //   }
   // }
-
 }

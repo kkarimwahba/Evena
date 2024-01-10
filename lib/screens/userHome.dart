@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:evena/Theme/theme_provider.dart';
 import 'package:evena/Theme/themedata.dart';
 import 'package:evena/screens/eventpage.dart';
+import 'package:evena/services/localdata.dart';
 import 'package:evena/widgets/drawers.dart';
+import 'package:evena/widgets/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +31,8 @@ class Event {
     required this.availability,
     required this.imagePath,
   });
+
+  static fromMap(Map<String, dynamic> data) {}
 }
 
 class UserHome extends StatefulWidget {
@@ -38,17 +43,21 @@ class UserHome extends StatefulWidget {
 }
 
 class _UserHomeState extends State<UserHome> {
+  LocalDatabase localDatabase = LocalDatabase();
+
   final TextEditingController _searchController = TextEditingController();
   bool _showFilter = false;
   String _selectedFilter = 'title';
 
   List<Event> allEvents = [];
   List<Event> filteredEvents = [];
+  bool isConnected = false;
 
   @override
   void initState() {
     super.initState();
     fetchEvents();
+    checkConnectivity();
   }
 
   bool loading = false;
@@ -100,6 +109,30 @@ class _UserHomeState extends State<UserHome> {
       });
     } catch (error) {
       print('Error fetching events: $error');
+    }
+  }
+
+  Future<void> checkConnectivity() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    setState(() {
+      isConnected = (connectivityResult == ConnectivityResult.mobile ||
+          connectivityResult == ConnectivityResult.wifi);
+    });
+
+    fetchEvents();
+  }
+
+  Future<void> fetchEventsFromSQLite() async {
+    try {
+      List<Event> localEvents = (await localDatabase.getEvents()).cast<Event>();
+
+      setState(() {
+        allEvents = localEvents;
+        filteredEvents = List<Event>.from(allEvents);
+        loading = false;
+      });
+    } catch (error) {
+      print('Error fetching events from SQLite: $error');
     }
   }
 
@@ -174,13 +207,21 @@ class _UserHomeState extends State<UserHome> {
         actions: [
           IconButton(
             icon: Icon(Icons.filter_list),
-            onPressed: toggleFilter, // Call the toggleFilter function
+            onPressed: toggleFilter,
           ),
           IconButton(
             icon: Icon(Icons.lightbulb_outline),
             onPressed: () {
-              // Toggle dark mode
               themeProvider.toggleTheme();
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FavoritesPage()),
+              );
             },
           ),
         ],

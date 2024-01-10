@@ -199,7 +199,13 @@ class _UserProfileState extends State<UserProfile> {
     try {
       // Delete the user account
       await user?.delete();
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User account deleted successfully!'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.green,
+        ),
+      );
       // Navigate to the login or signup page after account deletion
       Navigator.pushAndRemoveUntil(
         context,

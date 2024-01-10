@@ -1,9 +1,11 @@
-import 'package:evena/screens/SeatReservation.dart';
-import 'package:evena/screens/Booking.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:evena/services/LocationService.dart';
+import 'package:evena/screens/SeatReservation.dart';
+import 'package:evena/screens/Booking.dart';
 
-class EventDetailsPage extends StatelessWidget {
+class EventDetailsPage extends StatefulWidget {
   final String title;
   final String description;
   final DateTime date;
@@ -27,10 +29,53 @@ class EventDetailsPage extends StatelessWidget {
   });
 
   @override
+  _EventDetailsPageState createState() => _EventDetailsPageState();
+}
+
+class _EventDetailsPageState extends State<EventDetailsPage> {
+  bool isFavorite = false;
+  @override
+  void initState() {
+    super.initState();
+    checkIfFavorite();
+  }
+
+  Future<void> checkIfFavorite() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String userId = user.uid;
+
+      // Get a reference to the user's favorites collection
+      CollectionReference favoritesCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('favorites');
+
+      // Check if the event is already in favorites
+      DocumentSnapshot eventSnapshot =
+          await favoritesCollection.doc(widget.title).get();
+
+      setState(() {
+        isFavorite = eventSnapshot.exists;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Details'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: Colors.red,
+            ),
+            onPressed: () => toggleFavorite(),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -41,56 +86,48 @@ class EventDetailsPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Center(
                 child: Text(
-                  title,
+                  widget.title,
                   style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                      fontStyle: FontStyle.italic),
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ),
             ),
-            Image.network(imagePath),
+            Image.network(widget.imagePath),
             ListTile(
               title: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  description,
+                  widget.description,
                   style: TextStyle(fontSize: 17, height: 1),
                 ),
               ),
               subtitle: Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: Text('Date: ${date.toLocal()}'),
-              ),
-            ),
-
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Text(description),
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Text('Date: ${date.toLocal()}'),
-            // ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: ListTile(
-                title: Text('Time: $time'),
-                subtitle: Text('Location: $location'),
+                child: Text('Date: ${widget.date.toLocal()}'),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: ListTile(
-                title: Text('Category: $category'),
-                subtitle: Text('Price: $price EGP'),
+                title: Text('Time: ${widget.time}'),
+                subtitle: Text('Location: ${widget.location}'),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: ListTile(
-                title: Text('Availability: $availability'),
+                title: Text('Category: ${widget.category}'),
+                subtitle: Text('Price: ${widget.price} EGP'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: ListTile(
+                title: Text('Availability: ${widget.availability}'),
               ),
             ),
             Align(
@@ -104,19 +141,19 @@ class EventDetailsPage extends StatelessWidget {
                         backgroundColor: const Color.fromARGB(255, 255, 170, 0),
                       ),
                       onPressed: () {
-                        if (category.toLowerCase() == 'design') {
+                        if (widget.category.toLowerCase() == 'design') {
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) {
                               return SeatReservation(
-                                title: title,
-                                description: description,
-                                date: date,
-                                time: time,
-                                location: location,
-                                category: category,
-                                price: price,
-                                imagePath: imagePath,
-                                availability: availability,
+                                title: widget.title,
+                                description: widget.description,
+                                date: widget.date,
+                                time: widget.time,
+                                location: widget.location,
+                                category: widget.category,
+                                price: widget.price,
+                                imagePath: widget.imagePath,
+                                availability: widget.availability,
                               );
                             },
                           ));
@@ -125,15 +162,15 @@ class EventDetailsPage extends StatelessWidget {
                             builder: (context) {
                               return Booking(
                                 selectedSeats: [],
-                                title: this.title,
-                                description: this.description,
-                                date: this.date,
-                                time: this.time,
-                                location: this.location,
-                                category: this.category,
-                                price: this.price,
-                                imagePath: this.imagePath,
-                                availability: this.availability,
+                                title: widget.title,
+                                description: widget.description,
+                                date: widget.date,
+                                time: widget.time,
+                                location: widget.location,
+                                category: widget.category,
+                                price: widget.price,
+                                imagePath: widget.imagePath,
+                                availability: widget.availability,
                               );
                             },
                           ));
@@ -144,9 +181,10 @@ class EventDetailsPage extends StatelessWidget {
                         child: Text(
                           'Reservation',
                           style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 25,
-                              fontWeight: FontWeight.w500),
+                            color: Colors.black,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
@@ -165,5 +203,42 @@ class EventDetailsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void toggleFavorite() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String userId = user.uid;
+
+      // Get a reference to the user's favorites collection
+      CollectionReference favoritesCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('favorites');
+
+      if (isFavorite) {
+        // If the event is already favorited, remove it from favorites
+        await favoritesCollection.doc(widget.title).delete();
+      } else {
+        // If the event is not favorited, add it to favorites
+        await favoritesCollection.doc(widget.title).set({
+          'title': widget.title,
+          'description': widget.description,
+          'date': widget.date,
+          'time': widget.time,
+          'location': widget.location,
+          'category': widget.category,
+          'price': widget.price,
+          'imagePath': widget.imagePath,
+          'availability': widget.availability,
+        });
+      }
+
+      // Update the UI to reflect the new favorite status
+      setState(() {
+        isFavorite = !isFavorite;
+      });
+    }
   }
 }
