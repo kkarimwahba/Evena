@@ -3,6 +3,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:evena/Theme/theme_provider.dart';
 import 'package:evena/firebase_options.dart';
 import 'package:evena/screens/splashScreen.dart';
+import 'package:evena/screens/userHome.dart';
+import 'package:evena/services/localdata.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
